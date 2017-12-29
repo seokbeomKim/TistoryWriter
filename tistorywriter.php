@@ -4,19 +4,32 @@ Plugin Name: Tistory Writer
 Plugin URI: https://github.com/seokbeomKim/TistoryWriter)
 Description: 워드프레스와 티스토리를 연동하는 플러그인입니다. 
 Version: 1.0
-Author: 김석범, Sukbeom Kim (sukbeom.kim@gmail.com)
+Author: Sukbeom Kim (sukbeom.kim@gmail.com)
 Author URI: http://chaoxifer.tistory.com
-License: GPL2
+License: GPLv3
+
+'Tistory Writer' is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+any later version.
+ 
+Tistory Writer is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License
+along with Tistory Writer. If not, see http://www.gnu.org/licenses/gpl.html.
 */ 
 
 defined('ABSPATH') or die('No script kiddies please!');
 
-// 플러그인 Option 메뉴에 추가 
+/* 플러그인 Option 메뉴에 추가 */
 add_action('admin_menu', 'tw_menu');
 add_action('pre_post_update', 'tw_save_post', 10, 2);
 
 
-// 자바스크립트 파일 로드
+/* 자바스크립트 파일 로드 */
 wp_register_script('set_config', plugins_url('js/set_config.js', __FILE__));
 wp_enqueue_script('set_config');
 

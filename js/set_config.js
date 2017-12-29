@@ -19,7 +19,7 @@ function auth_submit() {
 
     var link = "https://www.tistory.com/oauth/authorize?client_id="+client_id.value+"&redirect_uri="+callback_url.value+"&response_type=token";
 
-    document.location.replace(link);   
+    document.location.replace(link);
 }
 
 function init_auth() {
