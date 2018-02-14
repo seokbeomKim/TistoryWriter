@@ -62,8 +62,8 @@ class HandlerManager
     {
         Logger::log("HandlerManager::handlerSettingInfoReset()");
         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
+        $optionMgr->setOption(OPTION_KEY\ACCESS_TOKEN, '');
 
-        $optionMgr->setOption(OPTION_KEY\AUTH_KEY, "");
-        $optionMgr->setOption(OPTION_KEY\ACCESS_TOKEN, "");
+        wp_safe_redirect(get_admin_url() . "/options-general.php?page=tistory_writer");
     }
 }

@@ -15,5 +15,6 @@ require_once(PLUGIN_DIR . '\features\script_manager.php');
 require_once(PLUGIN_DIR . '\features\api_manager.php');
 require_once(PLUGIN_DIR . '\features\auth_manager.php');
 require_once(PLUGIN_DIR . '\features\handler_manager.php');
+require_once(PLUGIN_DIR . '\widgets\TistoryMetabox.php');
 
 require_once(PLUGIN_DIR . '\etc\logger.php');

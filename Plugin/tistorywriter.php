@@ -58,6 +58,10 @@ add_action('admin_post_submit-tw-info', array('tistory_writer\TistoryWriter', 'h
 
 add_action('check_tistory_auth', array('tistory_writer\TistoryWriter', 'checkAuthCode'));
 
+add_action('add_meta_boxes', array('tistory_writer\TistoryWriter', 'addMetaBoxes'));
+
+
+
 /**
  * 플러그인 메인 클래스
  *
@@ -77,6 +81,7 @@ class TistoryWriter
     private $page_mgr;
     private $script_mgr;
     private $option_mgr;
+    private $metabox;
 
     /**
      * 싱글톤 객체 리턴 함수
@@ -102,6 +107,7 @@ class TistoryWriter
         $this->page_mgr = $this->class_mgr->getManager(FEATURE_KEY\PAGE_LOADER);
         $this->script_mgr = $this->class_mgr->getManager(FEATURE_KEY\SCRIPT);
         $this->option_mgr = $this->class_mgr->getManager(FEATURE_KEY\OPTION);
+        $this->metabox = new TistoryMetabox();
     }
 
     public static function checkAuthCode($code)
@@ -154,6 +160,13 @@ class TistoryWriter
             session_start();
         }
     }
+
+    public static function addMetaboxes()
+    {
+        Logger::log("addMetaboxes()");
+        add_meta_box('tw_meta_box', 'TistoryWriter', array(self::$instance->metabox, 'getContent'), 'post', 'normal', "high");
+    }
+
     /**
      * 사용자 버튼에 의해 Get Value가 전달됐는지 확인
      */

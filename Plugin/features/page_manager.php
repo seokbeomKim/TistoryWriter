@@ -63,4 +63,10 @@ class PageManager
         $pagePath = PAGE_DIR . '\auth.php';
         include($pagePath);
     }
+
+    public function getMetaboxPage()
+    {
+        $pagePath = PAGE_DIR . '\metabox.php';
+        include($pagePath);
+    }
 }

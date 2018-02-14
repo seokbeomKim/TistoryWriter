@@ -7,7 +7,12 @@ namespace tistory_writer;
 ?>
 <html>
 <body id="tistory_writer" onLoad="checkAuthCode()">
-    <div>
+    <div id='debug_div' style='visibility: hidden;'>
+    <p>
+        티스토리 액세스 코드 얻어오는 중...
+    </p>
+    </div>
+    <div id='main_div'>
     <p>
         Tistory Writer 플러그인을 사용해주셔서 감사합니다. <br />
         Tistory Writer는 워드프레스로 작성한 글을 티스토리 블로그에 자동으로 등록하는 플러그인입니다.

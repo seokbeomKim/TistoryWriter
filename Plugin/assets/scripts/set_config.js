@@ -47,6 +47,11 @@ function setAccessCode(v) {
 function checkAuthCode()
 {
     if(window.location.hash) {
+        var div = document.getElementById('main_div');
+        var dd = document.getElementById('debug_div');
+        div.style.visibility = 'hidden';
+        dd.style.visibility = 'visible';
+
         var hash = window.location.hash.substring(1);
         var n = hash.replace(/access_token=/, "");
         var final = n.replace(/&state=/,"");
