@@ -1,200 +1,214 @@
-<?php 
-/* 
-Plugin Name: Tistory Writer
-Plugin URI: https://github.com/seokbeomKim/TistoryWriter)
-Description: 워드프레스와 티스토리를 연동하는 플러그인입니다. 
-Version: 1.0
-Author: Sukbeom Kim (sukbeom.kim@gmail.com)
-Author URI: http://chaoxifer.tistory.com
-License: GPLv3
+<?php
+/**
+ * Plugin Name: Tistory Writer
+ * Plugin URI: https://github.com/seokbeomKim/TistoryWriter
+ * Description: 티스토리, 워드프레스 연동 플러그인
+ * Author: 김석범 (Sukbeom Kim)
+ * Author URI: https://chaoxifer.tistory.com
+ * Contributors:None
+ * Version: 1.0.0
+ * Text Domain: TistoryWriter
+ * Domain Path: /languages/
 
-'Tistory Writer' is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-any later version.
- 
-Tistory Writer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
- 
-You should have received a copy of the GNU General Public License
-along with Tistory Writer. If not, see http://www.gnu.org/licenses/gpl.html.
-*/ 
+ *
+ *  Copyright 2018 Sukbeom Kim
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions andlimitations under the License.
+ *
+ * @package TistoryWriter
+ * @category Core
+ * @author René Hermenau, Ilgıt Yıldırım
+ */
+
+namespace tistory_writer;
+
+define(__NAMESPACE__ . '\VERSION', '0.1');
+define(__NAMESPACE__ . '\MAIN_URL', $_SERVER['HTTP_HOST'] . '/wp-admin/options-general.php?page=tistory_writer');
+define(__NAMESPACE__ . '\PLUGIN_DIR', plugin_dir_path(__FILE__));
+define(__NAMESPACE__ . '\PLUGIN_URL', plugin_dir_url(__FILE__));
+define(__NAMESPACE__ . '\PLUGIN_FILE_URL', plugins_url());
+
+define(__NAMESPACE__ . '\PAGE_DIR', PLUGIN_DIR . '\assets\pages');
+define(__NAMESPACE__ . '\CSS_DIR', PLUGIN_DIR . '\assets\css');
+define(__NAMESPACE__ . '\PLUGIN_PREFIX', 'TistoryWriter');
+define(__NAMESPACE__ . '\PLUGIN_MENU_SLUG', 'tistory-writer-setting');
+
+require_once(dirname(__FILE__) . '\def\constants.php');
+require_once(dirname(__FILE__) . '\def\fs_require.php');
 
 defined('ABSPATH') or die('No script kiddies please!');
 
 /* 플러그인 Option 메뉴에 추가 */
-add_action('admin_menu', 'tw_menu');
-add_action('pre_post_update', 'tw_save_post', 10, 2);
+add_action('admin_menu', array('tistory_writer\TistoryWriter', 'addAdminOptionMenu'));
 
+add_action('init', array('tistory_writer\TistoryWriter', 'registerSession'));
 
-/* 자바스크립트 파일 로드 */
-wp_register_script('set_config', plugins_url('js/set_config.js', __FILE__));
-wp_enqueue_script('set_config');
+/* 플러그인에서 사용하는 css, script 추가 */
+add_action('admin_init', array('tistory_writer\TistoryWriter', 'initPlugin'));
 
-// 글 작성 시, 티스토리에 글 작성
-function tw_menu() {
-	//add_menu_page( 'Tistory Writer', 'Tistory Writer', 'activate_plugins', 'tistory_writer', 'tw_options', '');
-	add_options_page( 'Tistory Writer', 'Tistory Writer', 'activate_plugins', 'tistory_writer', 'tw_options', '');
+/* 플러그인에서 submit 하는 이벤트 처리 핸들러 등록 */
+add_action('admin_post_submit-tw-info', array('tistory_writer\TistoryWriter', 'handlerSubmit'));
+
+add_action('check_tistory_auth', array('tistory_writer\TistoryWriter', 'checkAuthCode'));
+
+/**
+ * 플러그인 메인 클래스
+ *
+ * @category Wordpress_Plugin
+ * @package  Tistory_Writer
+ * @author   Sukbeom Kim <sukbeom.kim@gmail.com>
+ * @license  GPL v2
+ * @version  Release: 0.1
+ * @link     https://github.com/seokbeomKim/TistoryWriter
+ */
+class TistoryWriter
+{
+    private static $instance;
+    private static $mutex;
+
+    private $class_mgr;
+    private $page_mgr;
+    private $script_mgr;
+    private $option_mgr;
+
+    /**
+     * 싱글톤 객체 리턴 함수
+     * @return 싱글톤 객체
+     */
+    public static function init()
+    {
+        if (!self::$instance) {
+            load_plugin_textdomain(PLUGIN_PREFIX, false, PLUGIN_DIR, 'languages');
+            self::$instance = new TistoryWriter();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * 클래스 생성자
+     *
+     * @return 객체 반환
+     */
+    public function __construct()
+    {
+        $this->class_mgr = new ClassManager();
+        $this->page_mgr = $this->class_mgr->getManager(FEATURE_KEY\PAGE_LOADER);
+        $this->script_mgr = $this->class_mgr->getManager(FEATURE_KEY\SCRIPT);
+        $this->option_mgr = $this->class_mgr->getManager(FEATURE_KEY\OPTION);
+    }
+
+    public static function checkAuthCode($code)
+    {
+        Logger::log("checkAuthCode is called." . $code . ", url = " . get_admin_url());
+        self::$instance->option_mgr->setOption(OPTION_KEY\AUTH_KEY, $code);
+        wp_safe_redirect(get_admin_url() . "/options-general.php?page=tistory_writer");
+    }
+
+    /**
+     * 플러그인 활성화 후킹 함수
+     *
+     * @static
+     * @hook   register_activation_hook
+     * @return void
+     */
+    public static function activatePlugin()
+    {
+        Logger::log("TistoryWriter::Activate plugin.");
+    }
+
+    /**
+     * 플러그인 비활성화 후킹 함수
+     *
+     * @static
+     * @hook   register_deactivation_hook
+     * @return void
+     */
+    public static function deactivatePlugin()
+    {
+        Logger::log("TistoryWriter::Deactivate plugin.");
+    }
+
+    public static function registerSession()
+    {
+        if (!session_id()) {
+            session_start();
+        }
+    }
+
+    public static function initPlugin()
+    {
+        self::loadFiles();
+        self::checkGetMethodValue();
+    }
+
+    public static function checkSessionAndStart()
+    {
+        if (!session_id()) {
+            session_start();
+        }
+    }
+    /**
+     * 사용자 버튼에 의해 Get Value가 전달됐는지 확인
+     */
+    public static function checkGetMethodValue()
+    {
+        self::checkSessionAndStart();
+
+        $current_url="https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+        Logger::log($current_url);
+
+        if (!empty($_GET['code'])) {
+            do_action('check_tistory_auth', $_GET['code']);
+        }
+    }
+
+    public static function addAdminOptionMenu()
+    {
+        self::$instance->page_mgr->addOptionPage();
+    }
+
+    public static function loadFiles()
+    {
+        self::$instance->script_mgr->loadFiles();
+    }
+
+    public static function getManager($managerName)
+    {
+        return self::$instance->class_mgr->getManager($managerName);
+    }
+
+    public static function handlerSubmit()
+    {
+        Logger::log('handleSubmitInformation: ' . $_POST['redirect_def']);
+        $handlerMgr = self::getManager(FEATURE_KEY\HANDLER);
+        $handlerMgr->handle($_POST['redirect_def']);
+        // self::redirectPage();
+    }
+
+    public static function redirectPage()
+    {
+        global $pagenow;
+
+        Logger::log("redirectPage's pageNow : " . $pagenow . ", post value = " . $_POST['redirect_def']);
+
+        exit(wp_redirect(admin_url('options-general.php?page=tistory_writer')));
+    }
 }
 
-function tw_save_post($post_id, $post) {
-	if (get_option('tw_access_token') == null) {
-		return;
-	}
-	$post_title = get_the_title( $post_id );
-	$post_url = get_permalink( $post_id );
-	$subject = 'A post has been updated';
+add_action('plugins_loaded', array('tistory_writer\TistoryWriter', 'init'));
 
-	$message = "A post has been updated on your website:\n\n";
-	$message .= $post_title . ": " . $post_url;
-
-	// Send email to admin.
-	wp_mail( 'sukbeom.kim@gmail.com', $subject, $content );
-
-	// 실제 메일 전송을 확인했으므로 티스토리 API를 이용해서 사용자가 원하는 
-	// 블로그에 글을 포스팅한다.
-	$url = "https://www.tistory.com/apis/post/write";
-	$blogName = get_option('tw_blogname');
-	$title = $post['post_title'];
-	$content = $post['post_content'];
-
-	$post_data = array(
-		'blogName' => $blogName,
-		'title' => $title,
-		'content' => $content,
-		'access_token' => get_option('tw_access_token'),
-		'visibility' => 2
-	);
-
-	$result = wp_remote_post($url, array(
-		'method' => 'POST',
-		'body' => $post_data
-	));
-}
-
-// 플러그인 메인
-function tw_options() {
-	if (!current_user_can('manage_options'))  {
-		wp_die( __('You do not have sufficient permissions to access this page.') );
-	} else { 
-		?>
-	
-	<?php 
-	if ($_GET["tw_step2_completed"] == true) {
-		echo 'alert("2단계 설정 완료")';
-	}
-	?>
-	</script>
-    <!-- Output for Plugin Options Page -->
-	<div class="wrap">
-        <h2 id="">Tistory Writer</h2>
-
-        <p>Tistory Writer 플러그인을 사용해주셔서 감사합니다. 
-		Tistory Writer는 워드프레스로 작성한 글을 티스토리 블로그에 자동으로 등록하는 플러그인입니다.</p>
-
-		<h3>사용법</h3>
-		<p>아래의 절차에 따라 티스토리 계정 연동을 설정합니다.</p>
-		<ol>
-			<!-- 1단계 설정. OpenAPI 서비스 등록 안내 -->
-			<li><b>티스토리 OAuth 인증 사용을 위해서 신규 클라이언트 아이디를 설정합니다. </b>
-			<p>
-			<a href="http://www.tistory.com/guide/api/manage/register">여기</a>를 눌러 티스토리 OpenAPI를 사용하기 위해 
-			클라이언트 ID를 등록하세요.
-			</p>
-			<ul style="list-style-type: circle; margin-left: 30px; padding-bottom: 20px;">
-				<li>서비스 명: 'TistoryWriter' </li>
-				<li>설명: 원하는대로 적으시면 됩니다.</li>
-				<li>서비스 URL: <?php print("http:// " . $_SERVER['HTTP_HOST']); ?></li>
-				<li>서비스 권한: 읽기/쓰기</li>
-				<li>Callback 경로: 플러그인이 설치된 경로(예: <?php print(plugin_dir_url(__FILE__) . "oauth_callback.php"); ?>)</li>
-			</ul>
-			</li>
-
-			<!-- 2단계. 1단계에서 발급받은 Client Id 관련 설정 -->
-			<li style="margin-bottom:20px; padding-bottom:10px;">
-			<b>
-			<a href="http://www.tistory.com/guide/api/manage/list">서비스 관리 페이지</a>로 접속하여 단계 1에서 등록한 서비스의 관리버튼을 클릭합니다.<br/><br/></b>
-			등록한 서비스의 상세 내용 중 Client ID, Secret Key, Callback URL을 입력하고 아래의 설정 버튼을 클릭합니다.
-			
-			<div style="margin-bottom:10px;">
-				<label>Client ID</label><br/>
-				<input size="50" type="text" id="client_id" name="client_id" value="<?php if($_GET['tw_step2_completed'] == true) {echo $_GET['client_id'];} else { $t = get_option('client_id'); if ($t != "null") echo $t; } ?>">
-			</div>
-			<div style="margin-bottom:10px;">
-				<label>Secret Key</label><br />
-				<input size="50" type="text" id="secret_key" name="secret_key" value="<?php if($_GET['tw_step2_completed'] == true) {echo $_GET['secret_key'];} else{ $t = get_option('secret_key'); if ($t != "null") echo $t; } ?>"/>
-			</div>
-			<div style="margin-bottom:10px;">
-				<label>Callback URL</label><br />
-				<input size="50" type="text" id="callback_url" name="callback_url" value="<?php if($_GET['tw_step2_completed'] == true){echo $_GET['callback_url'];} else {$t = get_option('callback_url'); if ($t != "null") echo $t; }?>" />
-			</div>
-			<div style="margin-bottom:10px;">
-				<label>블로그 이름(https://xxxx.tistory.com)에서 xxxx 입력</label><br />
-				<input size="50" type="text" id="blogname" name="blogname" value="<?php if($_GET['tw_step2_completed'] == true){echo $_GET['blogname'];} else {$t = get_option('tw_blogname'); if ($t != "null") echo $t; }?>" />
-			</div>
-			<div>
-				<a onClick="step2_onClick();" class="button">2단계 설정 완료</a>
-			</div>
-			</li>
-
-			<!-- 인증 요청 및 Authorization Code 발급 -->
-			<li>
-			<p>
-			아래의 '계정 연동' 버튼을 클릭하여 설정을 마무리합니다. 기존 연동은 연동 해제 버튼으로 해제할 수 있습니다.
-			</p>
-			<div>
-			<form id="auth_form" method="get" action="https://www.tistory.com/oauth/authorize/">
-			    <input type="hidden" id="form_client_id" name="client_id" value="{발급받은 client_id를 입력}"/>
-                <input type="hidden" id="form_redirect_url" name="redirect_uri" value="{등록시 입력한 redirect uri를 입력}"/>
-                <input type="hidden" id="form_response_type" name="response_type" value="token"/>
-            </form>
-			<div>
-			<label id="lbl_access_token">Access Token: 
-			<script type="text/javascript">
-			 if(window.location.hash) {
-                 var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
-				 var link = "?page=tistory_writer&"+hash;
-		         document.location.replace(link);
-			 }
-			</script>
-			<?php 
-			
-			if($_GET['access_token'] != null) {
-				echo $_GET['access_token'];
-				echo "<br/>";
-				update_option('tw_access_token', $_GET['access_token']);
-			} 
-			else {
-				$t = get_option('tw_access_token'); 
-				if ($t != "null") echo $t; 
-				else {echo "계정연동이 필요합니다.";} 
-			} 
-			?>
-			</label>
-			</div>
-	        <a class="button" onClick="auth_submit();">계정 연동</a>
-	        <a class="button" onClick="init_auth();">연동 해제</a>
-			</div>
-			</li>
-		</ol>
-
-
-	</div>
-
-
-	<!-- End Output for Plugin Options Page -->
-<?php 
-	if ($_GET["tw_step2_completed"] == true){
-		/// 2단계에서 저장한 사용자 데이터를 전역으로 저장함
-		update_option('client_id', $_GET['client_id']);
-		update_option('secret_key', $_GET['secret_key']);
-		update_option('callback_url', $_GET['callback_url']);
-		update_option('tw_blogname', $_GET['blogname']);
-	};
-
-	if ($_GET["tw_init_access_token"] == true) {
-		update_option('tw_access_token', null);
-	}
-}}; ?>
+/*
+ * 1. 워드프레스 api로 인한 코딩규칙 경고 무시
+ * 2. 플러그인 Active/Deactive 후커 등록
+ */
+// @codingStandardsIgnoreStart
+register_activation_hook(__FILE__, array('tistory_writer\TistoryWriter', 'activatePlugin'));
+register_deactivation_hook(__FILE__, array('tistory_writer\TistoryWriter', 'deactivatePlugin'));
+// @codingStandardsIgnoreEnd
