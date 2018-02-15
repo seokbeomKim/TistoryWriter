@@ -196,10 +196,32 @@ class ApiManager
                         'id' => $value['id'],
                         'url' => $value['postUrl'],
                         'date' => $value['date'],
+                        'visibility' => $value['visibility'],
+                        'category_id' => $value['categoryId'],
                     );
                 }
             }
         }
+    }
+
+    public function getVisibilityWithPostId($post_id)
+    {
+        $url = 'https://www.tistory.com/apis/post/read';
+        $data = array (
+            'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
+            'blogName' => get_option(OPTION_KEY\BLOG_NAME),
+            'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
+            'postId' => $post_id,
+        );
+
+        $response = wp_remote_post($url, array(
+            'body' => $data,
+            'output' => 'xml',
+        ));
+
+        $body = wp_remote_retrieve_body($response);
+        $xml = simplexml_load_string($body);
+        return $xml->item->acceptComment;
     }
 
     public function compareTimestamp($t1, $t2)

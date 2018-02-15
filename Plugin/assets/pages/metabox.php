@@ -62,6 +62,8 @@ if (!$api_mgr->checkAccessToken()) {
                 <?php
                 $post_info = $api_mgr->getPostInfoWithTitle($post->post_title, get_the_date("Y-m-d h:i:s", $post->ID));
 
+                $acceptComment = $api_mgr->getVisibilityWithPostId($post_info['id']);
+
                 if (isset($post_info['id'])) {
                 ?>
                 <a name="lbl_postLink" href="<?php echo $post_info['url']; ?>">
@@ -83,14 +85,19 @@ if (!$api_mgr->checkAccessToken()) {
             </td>
             <td>
                 <!-- 사용자 카테고리 선택 -->
-                <select name="select_category" id="select_category">
+                <select name="select_category" id="select_category" ?>">
                     <?php
                     $categories = $api_mgr->getCategoryList();
 
                     foreach ($categories as $k => $v) {
                         foreach ($v as $key => $value) {
-                            echo '<option value="' . $value['id'] . '">' .
-                            $value['label'] . '</option>';
+                            if ($value['id'] == $post_info['category_id']) {
+                                echo '<option value="' . $value['id'] . '" selected>' .
+                                $value['label'] . '</option>';
+                            } else {
+                                echo '<option value="' . $value['id'] . '">' .
+                                $value['label'] . '</option>';
+                            }
                         }
                     }
                     ?>
@@ -103,16 +110,35 @@ if (!$api_mgr->checkAccessToken()) {
             </td>
             <td>
                 <select id="select_visibility" name="select_visibility">
-                    <option value="0">비공개</option>
+                    <?php
+                    if ($post_info['visibility'] == 0) {
+                    ?>
+                    <option value="0" selected>비공개</option>
                     <option value="2">공개</option>
+                    <?php
+                    } else {
+                    ?>
+                    <option value="0">비공개</option>
+                    <option value="2" selected>공개</option>
+                    <?php
+                    }
+                    ?>
                 </select>
 
                 <!-- <input type="checkbox" name="checkProtected" value="protected"
                  id="checkProtected">
                 <label for="checkProtected">글 보호</label> -->
 
-                <input type="checkbox" name="checkAllowComment" value="protected" id="checkAllowComment">
-                <label for="checkAllowComment">댓글 허용</label>
+                <input type="checkbox" name="checkAllowComment" value="protected" id="checkAllowComment" <?php
+                if ($acceptComment == 1) {
+                    echo "checked";
+                }
+                ?>>
+                <label for="checkAllowComment" <?php
+                if ($acceptComment == 0) {
+                    echo "checked";
+                }
+                ?>>댓글 허용</label>
             </td>
         </tr>
         <tr class="tr">
