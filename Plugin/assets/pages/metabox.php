@@ -27,14 +27,9 @@ if (!$api_mgr->checkAccessToken()) {
 ?>
 <div id="tw_metabox">
     <table class="table">
+
         <tr class="tr">
-            <td class="td_label">
-                연동 기능
-            </td>
-            <td>
-                <input type="checkbox" name="turnIntegratationOff" value="off" id="turnIntegratationOff">
-                <label for="turnIntegratationOff">임시로 글 올리기 기능을 끕니다. (체크 시 기능 OFF)</label>
-            </td>
+
         </tr>
         <tr class="tr">
             <td class="td_label">
@@ -81,31 +76,6 @@ if (!$api_mgr->checkAccessToken()) {
         </tr>
         <tr class="tr">
             <td class="td_label">
-                <label>분류 선택</label>
-            </td>
-            <td>
-                <!-- 사용자 카테고리 선택 -->
-                <select name="select_category" id="select_category" ?>">
-                    <?php
-                    $categories = $api_mgr->getCategoryList();
-
-                    foreach ($categories as $k => $v) {
-                        foreach ($v as $key => $value) {
-                            if ($value['id'] == $post_info['category_id']) {
-                                echo '<option value="' . $value['id'] . '" selected>' .
-                                $value['label'] . '</option>';
-                            } else {
-                                echo '<option value="' . $value['id'] . '">' .
-                                $value['label'] . '</option>';
-                            }
-                        }
-                    }
-                    ?>
-                </select>
-            </td>
-        </tr>
-        <tr class="tr">
-            <td class="td_label">
                 공개 여부
             </td>
             <td>
@@ -143,14 +113,44 @@ if (!$api_mgr->checkAccessToken()) {
         </tr>
         <tr class="tr">
             <td class="td_label">
+                <label>분류 선택</label>
+            </td>
+            <td>
+                <!-- 사용자 카테고리 선택 -->
+                <select name="select_category" id="select_category" ?>">
+                    <?php
+                    $categories = $api_mgr->getCategoryList();
+
+                    foreach ($categories as $k => $v) {
+                        foreach ($v as $key => $value) {
+                            if ($value['id'] == $post_info['category_id']) {
+                                echo '<option value="' . $value['id'] . '" selected>' .
+                                $value['label'] . '</option>';
+                            } else {
+                                echo '<option value="' . $value['id'] . '">' .
+                                $value['label'] . '</option>';
+                            }
+                        }
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+
+        <tr class="tr">
+            <td class="td_label">
                 태그
             </td>
             <td>
-                <input size="50" type="text" name="input_tag" id="input_tag" value="" />
+                <input type="text" name="input_tag" id="input_tag" value="" />
             </td>
         </tr>
     </table>
-
+    <div>
+        <input type="checkbox" name="turnIntegratationOff" value="off" id="turnIntegratationOff" />
+        <label id="turnOffLbl" for="turnIntegratationOff">연동 기능을 임시해제합니다.</label>
+        </input>
+    </div>
 </div>
 <?php
 } ?>

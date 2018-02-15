@@ -19,7 +19,7 @@
 }
 
 #select_visibility {
-    width: 150px;
+    width: 100px;
 }
 
 #select_category {
@@ -28,4 +28,16 @@
 
 #lbl_desc {
     margin-left: 3px;
+}
+
+#input_tag {
+    width: 200px;
+}
+
+#turnIntegratationOff {
+    margin-top: 1px;
+    margin-left: 14px;
+}
+
+#turnOffLbl {
 }
