@@ -1,0 +1,31 @@
+#tw_metabox .table {
+    padding: 10px;
+}
+
+#tw_metabox .tr {
+    line-height:30px;
+}
+
+#tw_metabox .td_label {
+    width: 150px;
+}
+
+#checkAllowComment {
+    margin-left: 10px;
+}
+
+#checkProtected {
+    margin-left: 15px;
+}
+
+#select_visibility {
+    width: 150px;
+}
+
+#select_category {
+    width: 200px;
+}
+
+#lbl_desc {
+    margin-left: 3px;
+}

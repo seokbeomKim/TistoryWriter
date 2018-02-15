@@ -1,8 +1,6 @@
 <?php
 namespace tistory_writer;
 
-const PLUGIN_SLUG = "Tistory Writer Widget";
-
 // @codingStandardsIgnoreStart
 class TistoryMetabox {
     function getContent() {

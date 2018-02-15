@@ -60,6 +60,7 @@ add_action('check_tistory_auth', array('tistory_writer\TistoryWriter', 'checkAut
 
 add_action('add_meta_boxes', array('tistory_writer\TistoryWriter', 'addMetaBoxes'));
 
+add_action('wp_insert_post', array('tistory_writer\TistoryWriter', 'insertPost'), 10, 3);
 
 
 /**
@@ -90,7 +91,6 @@ class TistoryWriter
     public static function init()
     {
         if (!self::$instance) {
-            load_plugin_textdomain(PLUGIN_PREFIX, false, PLUGIN_DIR, 'languages');
             self::$instance = new TistoryWriter();
         }
         return self::$instance;
@@ -112,7 +112,6 @@ class TistoryWriter
 
     public static function checkAuthCode($code)
     {
-        Logger::log("checkAuthCode is called." . $code . ", url = " . get_admin_url());
         self::$instance->option_mgr->setOption(OPTION_KEY\AUTH_KEY, $code);
         wp_safe_redirect(get_admin_url() . "/options-general.php?page=tistory_writer");
     }
@@ -163,8 +162,7 @@ class TistoryWriter
 
     public static function addMetaboxes()
     {
-        Logger::log("addMetaboxes()");
-        add_meta_box('tw_meta_box', 'TistoryWriter', array(self::$instance->metabox, 'getContent'), 'post', 'normal', "high");
+        add_meta_box('tw_meta_box', '티스토리 연동', array(self::$instance->metabox, 'getContent'), 'post', 'normal', "high");
     }
 
     /**
@@ -175,7 +173,6 @@ class TistoryWriter
         self::checkSessionAndStart();
 
         $current_url="https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-        Logger::log($current_url);
 
         if (!empty($_GET['code'])) {
             do_action('check_tistory_auth', $_GET['code']);
@@ -199,19 +196,66 @@ class TistoryWriter
 
     public static function handlerSubmit()
     {
-        Logger::log('handleSubmitInformation: ' . $_POST['redirect_def']);
         $handlerMgr = self::getManager(FEATURE_KEY\HANDLER);
         $handlerMgr->handle($_POST['redirect_def']);
-        // self::redirectPage();
     }
 
     public static function redirectPage()
     {
         global $pagenow;
-
-        Logger::log("redirectPage's pageNow : " . $pagenow . ", post value = " . $_POST['redirect_def']);
-
         exit(wp_redirect(admin_url('options-general.php?page=tistory_writer')));
+    }
+
+    public static function postUpdate()
+    {
+        if (isset($_POST['post_title']) && isset($_POST['content'])) {
+            $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
+
+            // 글 정보
+            $title = $_POST['post_title'];
+            $content = $_POST['post_content'];
+            $category_id = $_POST['select_category'];
+            $visibility = $_POST['select_visibility'];
+            $isProtected = empty($_POST['checkProtected']) ? false : true;
+            $isAllowComment = empty($_POST['checkAllowComment']) ? false : true;
+            $tag = $_POST['input_tag'];
+
+            $apiMgr->insertPost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag);
+        }
+    }
+
+    public static function editPost()
+    {
+        if (isset($_POST['post_title']) && isset($_POST['content'])) {
+            $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
+
+            // 글 정보
+            $title = $_POST['post_title'];
+            $content = $_POST['post_content'];
+            $category_id = $_POST['select_category'];
+            $visibility = $_POST['select_visibility'];
+            $isProtected = empty($_POST['checkProtected']) ? false : true;
+            $isAllowComment = empty($_POST['checkAllowComment']) ? false : true;
+            $tag = $_POST['input_tag'];
+            $postId = $_POST['postId'];
+
+            $apiMgr->updatePost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag, $postId);
+        }
+    }
+
+    /**
+     * 사용자가 포스팅한 글을 티스토리에 업데이트한다.
+     */
+    public static function insertPost($post_id, $post, $update)
+    {
+        $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
+
+        if (empty($_POST['postId'])) {
+            /* 새로운 포스트 업로드 */
+            self::postUpdate();
+        } else {
+            self::editPost();
+        }
     }
 }
 

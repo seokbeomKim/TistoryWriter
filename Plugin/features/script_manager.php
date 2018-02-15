@@ -10,6 +10,7 @@ class ScriptManager
     /* Members */
     public $files_css = array (
         "main" => "css\main.css",
+        "metabox" => "css\metabox.css",
     );
 
     public $files_javascript = array (
@@ -49,11 +50,15 @@ class ScriptManager
     {
         $path = join('/', array(PLUGIN_URL,'assets', 'css','main.css'));
         wp_register_style('tistory-writer-main', $path);
+
+        $path = join('/', array(PLUGIN_URL,'assets', 'css','metabox.css'));
+        wp_register_style('tistory-writer-metabox', $path);
     }
 
     public function enqueueStyleFiles()
     {
         Logger::log("ScriptManager::enqueueScriptFiles: ");
         wp_enqueue_style('tistory-writer-main');
+        wp_enqueue_style('tistory-writer-metabox');
     }
 }

@@ -144,9 +144,10 @@ namespace tistory_writer;
                         <?php
                         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
                         $access_token = $optionMgr->getOption(OPTION_KEY\ACCESS_TOKEN);
+                        $apiMgr = TistoryWriter::getManager(FEATURE_KEY\TISTORY_API);
 
                         Logger::log("access token: " . $access_token);
-                        if (!empty($access_token)) {
+                        if (!empty($access_token) && $apiMgr->checkAccessToken()) {
                             echo $access_token;
                         } else {
                             echo "계정 연동이 필요합니다.";
