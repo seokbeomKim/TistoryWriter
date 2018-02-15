@@ -41,8 +41,8 @@ define(__NAMESPACE__ . '\PLUGIN_DIR', plugin_dir_path(__FILE__));
 define(__NAMESPACE__ . '\PLUGIN_URL', plugin_dir_url(__FILE__));
 define(__NAMESPACE__ . '\PLUGIN_FILE_URL', plugins_url());
 
-define(__NAMESPACE__ . '\PAGE_DIR', PLUGIN_DIR . '\assets\pages');
-define(__NAMESPACE__ . '\CSS_DIR', PLUGIN_DIR . '\assets\css');
+define(__NAMESPACE__ . '\PAGE_DIR', PLUGIN_DIR . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'pages');
+define(__NAMESPACE__ . '\CSS_DIR', PLUGIN_DIR . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css');
 define(__NAMESPACE__ . '\PLUGIN_PREFIX', 'TistoryWriter');
 define(__NAMESPACE__ . '\PLUGIN_MENU_SLUG', 'tistory-writer-setting');
 

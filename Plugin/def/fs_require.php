@@ -8,13 +8,13 @@
 
 namespace tistory_writer;
 
-require_once(PLUGIN_DIR . '\features\option_manager.php');
-require_once(PLUGIN_DIR . '\features\page_manager.php');
-require_once(PLUGIN_DIR . '\features\class_manager.php');
-require_once(PLUGIN_DIR . '\features\script_manager.php');
-require_once(PLUGIN_DIR . '\features\api_manager.php');
-require_once(PLUGIN_DIR . '\features\auth_manager.php');
-require_once(PLUGIN_DIR . '\features\handler_manager.php');
-require_once(PLUGIN_DIR . '\widgets\TistoryMetabox.php');
+require_once(PLUGIN_DIR . '\features' . DIRECTORY_SEPARATOR . 'option_manager.php');
+require_once(PLUGIN_DIR . '\features' . DIRECTORY_SEPARATOR . 'page_manager.php');
+require_once(PLUGIN_DIR . '\features' . DIRECTORY_SEPARATOR . 'class_manager.php');
+require_once(PLUGIN_DIR . '\features' . DIRECTORY_SEPARATOR . 'script_manager.php');
+require_once(PLUGIN_DIR . '\features' . DIRECTORY_SEPARATOR . 'api_manager.php');
+require_once(PLUGIN_DIR . '\features' . DIRECTORY_SEPARATOR . 'auth_manager.php');
+require_once(PLUGIN_DIR . '\features' . DIRECTORY_SEPARATOR . 'handler_manager.php');
+require_once(PLUGIN_DIR . '\widgets' . DIRECTORY_SEPARATOR . 'TistoryMetabox.php');
 
-require_once(PLUGIN_DIR . '\etc\logger.php');
+require_once(PLUGIN_DIR . '\etc' . DIRECTORY_SEPARATOR . 'logger.php');
