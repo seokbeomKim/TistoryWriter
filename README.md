@@ -2,7 +2,7 @@
 
 # Tistory Writer
 워드프레스용 티스토리 연동 플러그인 입니다.
-플러그인은 개발 중이며 사용 중 발견되는 버그는 <sukbeom.kim@gmail.com>으로 메일 주시기 바랍니다.
+사용 중 발견되는 버그는 <sukbeom.kim@gmail.com>으로 메일 주시기 바랍니다.
 
 ## 기능
 포스팅하고자 하는 티스토리의 블로그, 카테고리를 선택하여 포스팅 글 등록 및 수정을 할 수 있습니다.
@@ -21,7 +21,7 @@
 ![](https://github.com/seokbeomKim/TistoryWriter/blob/asset/step0.png?raw=true)
 
 ### 나. 계정 설정
-1. 티스토리 API 클라이언트 관리 페이지(http://www.tistory.com/guide/api/manage/register)에서 아래와 같이 플러그인 사용을 위한 클라이언트를 등록합니다. (Callback 경로, 서비스 URL은 플러그인 설정 창에서 직접 확인할 수 있습니다.)<br/>
+1. 티스토리 API 클라이언트 관리 페이지 (<a href=http://www.tistory.com/guide/api/manage/register>http://www.tistory.com/guide/api/manage/register</a>) 에서 아래와 같이 플러그인 사용을 위한 클라이언트를 등록합니다. (Callback 경로, 서비스 URL은 플러그인 설정 창에서 직접 확인할 수 있습니다.)<br/>
 ![](https://github.com/seokbeomKim/TistoryWriter/blob/asset/step1.PNG?raw=true)
 
 2. 설정 페이지에서 등록한 클라이언트 정보를 아래와 같이 입력해준 뒤에 'ID정보 저장' 버튼을 클릭합니다.<br/>
