@@ -101,6 +101,7 @@ class ApiManager
             'visibility' => $visibility,
             'category' => $category_id,
             'content' => $content,
+            'acceptComment' => $isAllowComment,
             'tag' => $tag
         );
         $response = wp_remote_post($url, array(
@@ -127,6 +128,7 @@ class ApiManager
                 'visibility' => $visibility,
                 'category' => $category_id,
                 'content' => $content,
+                'acceptComment' => $isAllowComment,
                 'tag' => $tag,
             );
             $response = wp_remote_post($url, array(
@@ -188,7 +190,7 @@ class ApiManager
         foreach ($posts as $k => $v) {
             foreach ($v as $key => $value) {
                 Logger::log("타이틀로 찾기 asdf: " . $value['title'] . $value['date'] . " vs " . $date);
-                if ($value['title'] === $title && $this->compareTimestamp($value['date'], $date)) {
+                if ($value['title'] === $title) {
                     Logger::log($title . ", id 반환값: " . $value['id']);
                     return array(
                         'id' => $value['id'],

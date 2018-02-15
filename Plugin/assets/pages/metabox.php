@@ -107,9 +107,9 @@ if (!$api_mgr->checkAccessToken()) {
                     <option value="2">공개</option>
                 </select>
 
-                <input type="checkbox" name="checkProtected" value="protected"
+                <!-- <input type="checkbox" name="checkProtected" value="protected"
                  id="checkProtected">
-                <label for="checkProtected">글 보호</label>
+                <label for="checkProtected">글 보호</label> -->
 
                 <input type="checkbox" name="checkAllowComment" value="protected" id="checkAllowComment">
                 <label for="checkAllowComment">댓글 허용</label>
