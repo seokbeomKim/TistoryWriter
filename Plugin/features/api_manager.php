@@ -166,7 +166,7 @@ class ApiManager
         }
     }
 
-    public function getPostInfoWithTitle($title)
+    public function getPostInfoWithTitle($title, $date)
     {
         $url = 'https://www.tistory.com/apis/post/list';
         $data = array (
@@ -187,15 +187,28 @@ class ApiManager
 
         foreach ($posts as $k => $v) {
             foreach ($v as $key => $value) {
-                Logger::log("타이틀로 찾기 asdf: " . $value['title']);
-                if ($value['title'] == $title) {
+                Logger::log("타이틀로 찾기 asdf: " . $value['title'] . $value['date'] . " vs " . $date);
+                if ($value['title'] === $title && $this->compareTimestamp($value['date'], $date)) {
                     Logger::log($title . ", id 반환값: " . $value['id']);
                     return array(
                         'id' => $value['id'],
                         'url' => $value['postUrl'],
+                        'date' => $value['date'],
                     );
                 }
             }
+        }
+    }
+
+    public function compareTimestamp($t1, $t2)
+    {
+        $t_t1 = substr($t1, 0, -9);
+        $t_t2 = substr($t2, 0, -9);
+
+        if ($t_t1 === $t_t2) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

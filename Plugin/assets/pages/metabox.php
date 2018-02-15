@@ -60,7 +60,7 @@ if (!$api_mgr->checkAccessToken()) {
             </td>
             <td>
                 <?php
-                $post_info = $api_mgr->getPostInfoWithTitle($post->post_title);
+                $post_info = $api_mgr->getPostInfoWithTitle($post->post_title, get_the_date("Y-m-d h:i:s", $post->ID));
 
                 if (!empty($post_info['id'])) {
                 ?>

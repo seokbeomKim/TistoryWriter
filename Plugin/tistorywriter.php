@@ -249,14 +249,17 @@ class TistoryWriter
     public static function insertPost($post_id, $post, $update)
     {
         $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
+        $flag = empty($_POST['turnIntegratationOff']);
 
-        if (!isset($_POST['turnIntegratationOff']) && $_POST['turnIntegratationOff'] != "off") {
+        if ($flag) {
             if (empty($_POST['postId'])) {
                 /* 새로운 포스트 업로드 */
                 self::postUpdate();
             } else {
                 self::editPost();
             }
+        } else {
+            Logger::log("insertPost, 연동기능 임시 해제");
         }
     }
 }
