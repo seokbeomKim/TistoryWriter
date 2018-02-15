@@ -23,7 +23,6 @@ class ClassManager
 
     public function getManager($mgr_name)
     {
-        Logger::log("getManager: " . $mgr_name);
         return $this->features[$mgr_name];
     }
 }

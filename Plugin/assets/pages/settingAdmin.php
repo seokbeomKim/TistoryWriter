@@ -30,7 +30,7 @@ namespace tistory_writer;
                 <li>설명: 원하는대로 적으시면 됩니다.</li>
                 <li>서비스 URL: <?php print("http:// " . $_SERVER['HTTP_HOST']); ?></li>
                 <li>서비스 권한: 읽기/쓰기</li>
-                <li>Callback 경로: 플러그인이 설치된 경로(아래 텍스트박스에 있는 경로를 입력합니다.)</li>
+                <li>Callback 경로: <?php echo get_admin_url() . 'options-general.php?page=tistory_writer'; ?></li>
             </ul>
             </div>
         </ol>
