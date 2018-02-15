@@ -142,7 +142,15 @@ if (!$api_mgr->checkAccessToken()) {
                 태그
             </td>
             <td>
-                <input type="text" name="input_tag" id="input_tag" value="" />
+                <input type="text" name="input_tag" id="input_tag" value="<?php
+                $tags = $api_mgr->getTagsWithPostId($post_info['id']);
+                $tValue = "";
+
+                for ($i = 0; $i < count($tags['tag']); $i++) {
+                    $tValue .= $tags['tag'][$i] . ", ";
+                }
+                echo substr($tValue, 0, -2);
+                ?>" />
             </td>
         </tr>
     </table>
