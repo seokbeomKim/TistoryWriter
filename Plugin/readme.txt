@@ -1,12 +1,12 @@
 === Tistory Writer ===
-Contributors: sukbeom 
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=joshferrara@gmail.com
+Contributors: Sukbeom Kim
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=xclick&business=sukbeom.kim@gmail.com
 Tags: content, tistory, development, integration
 Requires at least: 1.5
 Tested up to: 4.1.1
 Stable tag: 1.3
 
-티스토리 블로그에 글을 포스팅할 수 있도록 도와주는 플러그인입니다. 
+티스토리 블로그에 글을 포스팅할 수 있도록 도와주는 플러그인입니다.
 
 == Description ==
 
