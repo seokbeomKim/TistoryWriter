@@ -83,7 +83,7 @@ namespace tistory_writer;
                         <?php
                         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
                         $v = $optionMgr->getOption(OPTION_KEY\CALLBACK_URL);
-                        if (is_empty($v)) {
+                        if (!isset($v)) {
                             echo get_admin_url() . 'options-general.php?page=tistory_writer';
                         } else {
                             echo $v;
@@ -147,7 +147,7 @@ namespace tistory_writer;
                         $apiMgr = TistoryWriter::getManager(FEATURE_KEY\TISTORY_API);
 
                         Logger::log("access token: " . $access_token);
-                        if (!is_empty($access_token) && $apiMgr->checkAccessToken()) {
+                        if (isset($access_token) && $apiMgr->checkAccessToken()) {
                             echo $access_token;
                         } else {
                             echo "계정 연동이 필요합니다.";

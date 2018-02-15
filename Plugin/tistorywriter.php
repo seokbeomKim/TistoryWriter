@@ -68,11 +68,6 @@ add_action('add_meta_boxes', array('tistory_writer\TistoryWriter', 'addMetaBoxes
 
 add_action('wp_insert_post', array('tistory_writer\TistoryWriter', 'insertPost'), 10, 3);
 
-function is_empty($var)
-{
-    return empty($var);
-}
-
 /**
  * 플러그인 메인 클래스
  *
@@ -226,8 +221,8 @@ class TistoryWriter
             $content = $_POST['post_content'];
             $category_id = $_POST['select_category'];
             $visibility = $_POST['select_visibility'];
-            $isProtected = is_empty($_POST['checkProtected']) ? false : true;
-            $isAllowComment = is_empty($_POST['checkAllowComment']) ? false : true;
+            $isProtected = isset($_POST['checkProtected']) ? true : false;
+            $isAllowComment = isset($_POST['checkAllowComment']) ? true : false;
             $tag = $_POST['input_tag'];
 
             $apiMgr->insertPost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag);
@@ -244,8 +239,8 @@ class TistoryWriter
             $content = $_POST['post_content'];
             $category_id = $_POST['select_category'];
             $visibility = $_POST['select_visibility'];
-            $isProtected = is_empty($_POST['checkProtected']) ? false : true;
-            $isAllowComment = is_empty($_POST['checkAllowComment']) ? false : true;
+            $isProtected = isset($_POST['checkProtected']) ? true : false;
+            $isAllowComment = isset($_POST['checkAllowComment']) ? true : false;
             $tag = $_POST['input_tag'];
             $postId = $_POST['postId'];
 
@@ -259,10 +254,10 @@ class TistoryWriter
     public static function insertPost($post_id, $post, $update)
     {
         $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
-        $flag = is_empty($_POST['turnIntegratationOff']);
+        $flag = isset($_POST['turnIntegratationOff']);
 
-        if ($flag) {
-            if (is_empty($_POST['postId'])) {
+        if (!$flag) {
+            if ($_POST['postId'] == -1) {
                 /* 새로운 포스트 업로드 */
                 self::postUpdate();
             } else {

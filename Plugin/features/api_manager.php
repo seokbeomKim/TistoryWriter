@@ -116,7 +116,7 @@ class ApiManager
 
         Logger::log("updatePost, postId = ", $postId);
 
-        if (empty($postId)) {
+        if (!isset($postId)) {
             $this->insertPost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag);
         } else {
             $data = array (

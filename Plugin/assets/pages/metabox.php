@@ -45,7 +45,7 @@ if (!$api_mgr->checkAccessToken()) {
                 <label id="lbl_desc">  <b>
                 <?php
                 $account = $api_mgr->getBlogAccount();
-                if (empty($account)) {
+                if (!isset($account)) {
                     echo "Access 토큰이 정상적으로 발급되지 않았습니다.";
                 } else {
                     echo $account;
@@ -62,7 +62,7 @@ if (!$api_mgr->checkAccessToken()) {
                 <?php
                 $post_info = $api_mgr->getPostInfoWithTitle($post->post_title, get_the_date("Y-m-d h:i:s", $post->ID));
 
-                if (!empty($post_info['id'])) {
+                if (isset($post_info['id'])) {
                 ?>
                 <a name="lbl_postLink" href="<?php echo $post_info['url']; ?>">
                 <?php
@@ -73,8 +73,8 @@ if (!$api_mgr->checkAccessToken()) {
                 <?php
                 } else {
                     echo "<label id='lbl_desc'>티스토리 블로그에서 해당 글을 찾을 수 없습니다.</label>";
-                }
-                ?>
+                    echo "<input type='hidden' name='postId' id='postId'  value='-1' />";
+                }?>
             </td>
         </tr>
         <tr class="tr">

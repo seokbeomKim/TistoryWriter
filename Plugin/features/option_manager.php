@@ -71,7 +71,7 @@ class OptionManager
         }
 
 
-        if (!is_empty(get_option($name))) {
+        if (get_option($name) != null) {
             Logger::log("update_option called" . get_option($name));
             return true;
         } else {
