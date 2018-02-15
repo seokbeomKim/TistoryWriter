@@ -46,8 +46,8 @@ define(__NAMESPACE__ . '\CSS_DIR', PLUGIN_DIR . '\assets\css');
 define(__NAMESPACE__ . '\PLUGIN_PREFIX', 'TistoryWriter');
 define(__NAMESPACE__ . '\PLUGIN_MENU_SLUG', 'tistory-writer-setting');
 
-require_once(dirname(__FILE__) . '\def\constants.php');
-require_once(dirname(__FILE__) . '\def\fs_require.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'def' . DIRECTORY_SEPARATOR . 'constants.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'def' . DIRECTORY_SEPARATOR . 'fs_require.php');
 
 defined('ABSPATH') or die('No script kiddies please!');
 
