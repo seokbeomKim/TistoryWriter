@@ -1,3 +1,5 @@
+<link href="markdown.css" rel="stylesheet"></link>
+
 # Tistory Writer
 워드프레스용 티스토리 연동 플러그인 입니다.
 플러그인은 개발 중이며 사용 중 발견되는 버그는 <sukbeom.kim@gmail.com>으로 메일 주시기 바랍니다.
@@ -28,7 +30,7 @@
 3. 저장이 완료되면 계정 연동 버튼을 클릭하여 설정을 완료합니다. 설정이 완료되면 AccessCode가 나타나며, 해당 코드는 일정 시간이 지나면 만료되면 다시 갱신되어야 합니다.<br/>
 ![](https://github.com/seokbeomKim/TistoryWriter/blob/asset/step3.PNG?raw=true)
 
-### 나. 글 올리기
+### 다. 글 올리기
 1. Post -> Add New 버튼을 클릭하면, 아래와 같이 티스토리 연동 위젯이 추가된 것을 확인할 수 있습니다.<br/>
 ![](https://github.com/seokbeomKim/TistoryWriter/blob/asset/step4.PNG?raw=true)
     - 연동 기능: 새 글을 할 때 임시로 연동 기능을 끄고 포스팅할 수 있습니다.
