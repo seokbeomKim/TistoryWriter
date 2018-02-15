@@ -67,13 +67,16 @@ class OptionManager
             update_option($name, $value);
         } else {
             Logger::log("add option completed");
+            return true;
         }
 
 
-        if (!empty(get_option($name))) {
+        if (!is_empty(get_option($name))) {
             Logger::log("update_option called" . get_option($name));
+            return true;
         } else {
             Logger::log("add_option called: " . $name . ', value = ' . $value);
+            return true;
         }
     }
 }
