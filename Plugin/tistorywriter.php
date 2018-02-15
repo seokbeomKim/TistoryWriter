@@ -256,7 +256,7 @@ class TistoryWriter
         $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
         $flag = isset($_POST['turnIntegratationOff']);
 
-        if (!$flag) {
+        if (!$flag && isset($_POST['postId'])) {
             if ($_POST['postId'] == -1) {
                 /* 새로운 포스트 업로드 */
                 self::postUpdate();
