@@ -1,6 +1,6 @@
 === Tistory Writer ===
 Contributors: Sukbeom Kim
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=xclick&business=sukbeom.kim@gmail.com
+Donate link:
 Tags: content, tistory, development, integration
 Requires at least: 1.5
 Tested up to: 4.1.1
