@@ -250,11 +250,13 @@ class TistoryWriter
     {
         $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
 
-        if (empty($_POST['postId'])) {
-            /* 새로운 포스트 업로드 */
-            self::postUpdate();
-        } else {
-            self::editPost();
+        if (!isset($_POST['turnIntegratationOff']) && $_POST['turnIntegratationOff'] != "off") {
+            if (empty($_POST['postId'])) {
+                /* 새로운 포스트 업로드 */
+                self::postUpdate();
+            } else {
+                self::editPost();
+            }
         }
     }
 }

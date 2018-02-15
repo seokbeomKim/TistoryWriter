@@ -133,7 +133,7 @@ namespace tistory_writer;
     </div>
     <div class="div_setting_step">
         <h3 header="header">#4. 연동 정보</h3>
-        <p>설정이 정상적으로 완료되면 엑세스 토큰 정보가 활성화 됩니다.</p>
+        <p>설정이 정상적으로 완료되면 엑세스 토큰 정보가 활성화 됩니다. (액세스 토큰은 정해진 시간에 따라 자동으로 만료되어 갱신이 필요합니다.)</p>
         <table class="table">
             <tr>
                 <td>

@@ -21,6 +21,7 @@ if (!$api_mgr->checkAccessToken()) {
     $post_allowcomment = get_post_meta($post->ID, '_checkAllowComment', true);
     $post_tag = get_post_meta($post->ID, '_input_tag', true);
     $post_link = get_post_meta($post->ID, '_postId', true);
+    $post_switch = get_post_meta($post->ID, '_turnIntegratationOff', true);
 
     wp_nonce_field('reference_meta_box', 'reference_nonce');
 ?>
