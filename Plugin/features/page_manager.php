@@ -48,25 +48,25 @@ class PageManager
 
     public function getAdminSettingPage()
     {
-        $pagePath = PAGE_DIR . '\settingAdmin.php';
+        $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR . 'settingAdmin.php';
         include($pagePath);
     }
 
     public function getUserSettingPage()
     {
-        $pagePath = PAGE_DIR . '\settingUser.php';
+        $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR. 'settingUser.php';
         include($pagePath);
     }
 
     public function getOAuthPage()
     {
-        $pagePath = PAGE_DIR . '\auth.php';
+        $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR . 'auth.php';
         include($pagePath);
     }
 
     public function getMetaboxPage()
     {
-        $pagePath = PAGE_DIR . '\metabox.php';
+        $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR . 'metabox.php';
         include($pagePath);
     }
 }

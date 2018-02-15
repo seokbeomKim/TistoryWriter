@@ -184,7 +184,7 @@ class TistoryWriter
 
         $current_url="https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 
-        if (!is_empty($_GET['code'])) {
+        if (isset($_GET['code'])) {
             do_action('check_tistory_auth', $_GET['code']);
         }
     }
