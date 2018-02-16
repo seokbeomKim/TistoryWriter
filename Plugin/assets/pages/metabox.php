@@ -146,8 +146,10 @@ if (!$api_mgr->checkAccessToken()) {
                 $tags = $api_mgr->getTagsWithPostId($post_info['id']);
                 $tValue = "";
 
-                for ($i = 0; $i < count($tags['tag']); $i++) {
-                    $tValue .= $tags['tag'][$i] . ", ";
+                if (isset($tags['tag'])) {
+                    for ($i = 0; $i < count($tags['tag']); $i++) {
+                        $tValue .= $tags['tag'][$i] . ", ";
+                    }
                 }
                 echo substr($tValue, 0, -2);
                 ?>" />

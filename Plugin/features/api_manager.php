@@ -160,7 +160,8 @@ class ApiManager
         foreach ($posts as $k => $v) {
             foreach ($v as $key => $value) {
                 Logger::log("타이틀로 찾기 asdf: " . $value['title']);
-                if ($value['title'] == $title) {
+                Logger::log("타이블 title = " . $title);
+                if (stripslashes($value['title']) === stripslashes($title)) {
                     Logger::log($title . ", id 반환값: " . $value['id']);
                     $id = $value['id'];
                 }
@@ -190,7 +191,9 @@ class ApiManager
         foreach ($posts as $k => $v) {
             foreach ($v as $key => $value) {
                 Logger::log("타이틀로 찾기 asdf: " . $value['title'] . $value['date'] . " vs " . $date);
-                if ($value['title'] === $title) {
+                Logger::log("타이블 title = " . $title);
+
+                if ($this->decodeCharacters(stripslashes($value['title'])) === $this->decodeCharacters(stripslashes($title))) {
                     Logger::log($title . ", id 반환값: " . $value['id']);
                     return array(
                         'id' => $value['id'],
@@ -202,6 +205,11 @@ class ApiManager
                 }
             }
         }
+    }
+
+    public function decodeCharacters($data)
+    {
+        return mb_convert_encoding($data, 'UTF-8', 'HTML-ENTITIES');
     }
 
     public function getVisibilityWithPostId($post_id)

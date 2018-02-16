@@ -217,8 +217,8 @@ class TistoryWriter
             $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
 
             // 글 정보
-            $title = $_POST['post_title'];
-            $content = $_POST['post_content'];
+            $title = stripslashes($_POST['post_title']);
+            $content = stripslashes($_POST['post_content']);
             $category_id = $_POST['select_category'];
             $visibility = $_POST['select_visibility'];
             $isProtected = isset($_POST['checkProtected']) ? true : false;
@@ -235,8 +235,9 @@ class TistoryWriter
             $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
 
             // 글 정보
-            $title = $_POST['post_title'];
-            $content = $_POST['post_content'];
+            $title = stripslashes($_POST['post_title']);
+
+            $content = stripslashes($_POST['post_content']);
             $category_id = $_POST['select_category'];
             $visibility = $_POST['select_visibility'];
             $isProtected = isset($_POST['checkProtected']) ? true : false;
@@ -246,6 +247,11 @@ class TistoryWriter
 
             $apiMgr->updatePost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag, $postId);
         }
+    }
+
+    public static function decodeCharacters($data)
+    {
+        return mb_convert_encoding($data, 'UTF-8', 'HTML-ENTITIES');
     }
 
     /**
