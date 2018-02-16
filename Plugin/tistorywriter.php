@@ -223,6 +223,7 @@ class TistoryWriter
             // 글 정보
             $title = stripslashes($_POST['post_title']);
             $content = stripslashes($_POST['post_content']);
+            $content = preg_replace("/\r\n|\r|\n/", '<br/>', $content);
             $category_id = $_POST['select_category'];
             $visibility = $_POST['select_visibility'];
             $isProtected = isset($_POST['checkProtected']) ? true : false;
@@ -241,6 +242,8 @@ class TistoryWriter
             // 글 정보
             $title = stripslashes($_POST['post_title']);
             $content = stripslashes($_POST['post_content']);
+            $content = preg_replace("/\r\n|\r|\n/", '<br/>', $content);
+
             $category_id = $_POST['select_category'];
             $visibility = $_POST['select_visibility'];
             $isProtected = isset($_POST['checkProtected']) ? true : false;
