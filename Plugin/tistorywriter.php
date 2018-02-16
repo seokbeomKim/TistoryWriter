@@ -89,6 +89,8 @@ class TistoryWriter
     private $option_mgr;
     private $metabox;
 
+    public static $count = 0;
+
     /**
      * 싱글톤 객체 리턴 함수
      * @return 싱글톤 객체
@@ -215,6 +217,8 @@ class TistoryWriter
     {
         if (isset($_POST['post_title']) && isset($_POST['content'])) {
             $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
+            Logger::log("content is " . $_POST['content']);
+
 
             // 글 정보
             $title = stripslashes($_POST['post_title']);
@@ -236,7 +240,6 @@ class TistoryWriter
 
             // 글 정보
             $title = stripslashes($_POST['post_title']);
-
             $content = stripslashes($_POST['post_content']);
             $category_id = $_POST['select_category'];
             $visibility = $_POST['select_visibility'];
@@ -263,15 +266,23 @@ class TistoryWriter
         $flag = isset($_POST['turnIntegratationOff']);
 
         if (!$flag && isset($_POST['postId'])) {
-            if ($_POST['postId'] == -1) {
-                /* 새로운 포스트 업로드 */
-                self::postUpdate();
-            } else {
-                self::editPost();
+            if (self::$count == 0) {
+                self::$count++;
+                if ($_POST['postId'] == -1) {
+                    /* 새로운 포스트 업로드 */
+                    self::postUpdate();
+                } else {
+                    self::editPost();
+                }
             }
         } else {
             Logger::log("insertPost, 연동기능 임시 해제");
         }
+    }
+
+    public static function resetCount()
+    {
+        self::$count = 0;
     }
 }
 

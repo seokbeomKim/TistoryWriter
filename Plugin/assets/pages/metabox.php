@@ -10,6 +10,8 @@ $current_url = home_url(add_query_arg(array(), $wp->request));
 
 Logger::log("Metabox url = " . $current_url);
 
+TistoryWriter::resetCount();
+
 if (!$api_mgr->checkAccessToken()) {
     $api_mgr->refreshAccessToken();
 } else {
