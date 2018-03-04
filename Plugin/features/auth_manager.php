@@ -21,8 +21,10 @@ class AuthManager
 
     public function getAccessToken($return_url = null)
     {
-        Logger::log("getAccessToken is called with " . $return_url);
-
+        if (method_exists('\\tistory_writer\\Logger', 'log')) {
+            Logger::log("getAccessToken is called with " . $return_url);
+        }
+        
         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
 
         $authorization_code = $optionMgr->getOption(OPTION_KEY\AUTH_KEY);

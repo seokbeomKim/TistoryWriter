@@ -37,8 +37,6 @@ class PageManager
     */
     public function addOptionPage()
     {
-        Logger::log("Add Option Tistory Writer Menu");
-
         if (current_user_can('manage_options')) {
             add_options_page('Tistory Writer', 'Tistory Writer', 'manage_options', 'tistory_writer', array($this, 'getAdminSettingPage'));
         } else {

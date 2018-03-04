@@ -42,7 +42,6 @@ class ScriptManager
 
     public function enqueueScriptFiles()
     {
-        Logger::log("ScriptManager::enqueueScriptFiles: ");
         wp_enqueue_script('tistory-writer-set_config');
     }
 
@@ -57,7 +56,6 @@ class ScriptManager
 
     public function enqueueStyleFiles()
     {
-        Logger::log("ScriptManager::enqueueScriptFiles: ");
         wp_enqueue_style('tistory-writer-main');
         wp_enqueue_style('tistory-writer-metabox');
     }

@@ -19,7 +19,6 @@ class HandlerManager
 
     public function handle($redirectDef)
     {
-        Logger::log("handle:" . $redirectDef);
         $this->handlers[$redirectDef]();
     }
 
@@ -28,14 +27,11 @@ class HandlerManager
      */
     public function handlerSettingInfo()
     {
-        Logger::log("HandlerManager::handlerSettingInfo()");
         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
 
         $callback_uri_temp = get_admin_url() . 'options-general.php?page=tistory_writer';
 
         /* 옵션 설정 */
-        Logger::log("client id = " . $_POST['client_id'] . ", secret_key = " . $_POST['secret_key']);
-        Logger::log("blog_name = " . $_POST['blogname']);
         $optionMgr->setOption(OPTION_KEY\CLIENT_ID, $_POST['client_id']);
         $optionMgr->setOption(OPTION_KEY\SECRET_KEY, $_POST['secret_key']);
         $optionMgr->setOption(OPTION_KEY\BLOG_NAME, $_POST['blogname']);
@@ -49,18 +45,14 @@ class HandlerManager
      */
     public function handlerAccessCode()
     {
-        Logger::log("handlerAccessCode is called: " . $_POST['access_code'] . ", " . OPTION_KEY\ACCESS_TOKEN);
         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
         $optionMgr->setOption(OPTION_KEY\ACCESS_TOKEN, $_POST['access_code']);
-
-        Logger::log("handlerAccessCode is called: " . $_POST['access_code']);
 
         wp_safe_redirect(get_admin_url() . "/options-general.php?page=tistory_writer");
     }
 
     public function handlerSettingInfoReset()
     {
-        Logger::log("HandlerManager::handlerSettingInfoReset()");
         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
         $optionMgr->setOption(OPTION_KEY\ACCESS_TOKEN, '');
 

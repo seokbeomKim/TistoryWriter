@@ -132,7 +132,9 @@ class TistoryWriter
      */
     public static function activatePlugin()
     {
-        Logger::log("TistoryWriter::Activate plugin.");
+        if (method_exists('\\tistory_writer\\Logger', 'log')) {
+            Logger::log("TistoryWriter::Activate plugin.");
+        }
     }
 
     /**
@@ -144,7 +146,9 @@ class TistoryWriter
      */
     public static function deactivatePlugin()
     {
-        Logger::log("TistoryWriter::Deactivate plugin.");
+        if (method_exists('\\tistory_writer\\Logger', 'log')) {
+            Logger::log("TistoryWriter::Deactivate plugin.");
+        }
     }
 
     public static function registerSession()
@@ -217,8 +221,6 @@ class TistoryWriter
     {
         if (isset($_POST['post_title']) && isset($_POST['content'])) {
             $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
-            Logger::log("content is " . $_POST['content']);
-
 
             // 글 정보
             $title = stripslashes($_POST['post_title']);
@@ -279,7 +281,9 @@ class TistoryWriter
                 }
             }
         } else {
-            Logger::log("insertPost, 연동기능 임시 해제");
+            if (method_exists('\\tistory_writer\\Logger', 'log')) {
+                Logger::log("insertPost, 연동기능 임시 해제");
+            }
         }
     }
 

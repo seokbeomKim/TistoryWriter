@@ -8,7 +8,9 @@ $api_mgr = TistoryWriter::getManager(FEATURE_KEY\TISTORY_API);
 global $wp;
 $current_url = home_url(add_query_arg(array(), $wp->request));
 
-Logger::log("Metabox url = " . $current_url);
+if (method_exists('\\tistory_writer\\Logger', 'log')) {
+    Logger::log("Metabox url = " . $current_url);
+}
 
 TistoryWriter::resetCount();
 

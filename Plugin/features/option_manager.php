@@ -26,7 +26,6 @@ class OptionManager
 {
     public function __construct()
     {
-        Logger::log("Initialize OptionManager");
     }
 
     public function getName()
@@ -46,7 +45,6 @@ class OptionManager
     {
         TistoryWriter::checkSessionAndStart();
         $var = get_option($name);
-        Logger::log("getOption: " . $name . " : " .$var);
         return $var;
     }
 
@@ -62,20 +60,16 @@ class OptionManager
     {
         TistoryWriter::checkSessionAndStart();
 
-        Logger::log("setOption: " . $name . " as " . $value);
         if (add_option($name, $value) == false) {
             update_option($name, $value);
         } else {
-            Logger::log("add option completed");
             return true;
         }
 
 
         if (get_option($name) != null) {
-            Logger::log("update_option called" . get_option($name));
             return true;
         } else {
-            Logger::log("add_option called: " . $name . ', value = ' . $value);
             return true;
         }
     }

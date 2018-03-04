@@ -11,7 +11,6 @@ class ApiManager
 
     public function __construct()
     {
-        Logger::log("ApiManager is initialized");
         $this->access_token = get_option(OPTION_KEY\ACCESS_TOKEN);
     }
 
@@ -25,7 +24,6 @@ class ApiManager
 
     public function refreshAccessToken()
     {
-        Logger::log("Access token 갱신 필요");
         $page_mgr = TistoryWriter::getManager(FEATURE_KEY\PAGE_LOADER);
         $page_mgr->getOAuthPage();
     }
@@ -91,7 +89,6 @@ class ApiManager
     public function insertPost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag)
     {
         /* 이미 해당 post가 있는지 확인 */
-        Logger::log("updatePost(): category_id = " . $category_id);
         $url = 'https://www.tistory.com/apis/post/write';
         $data = array (
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
@@ -113,8 +110,6 @@ class ApiManager
     public function updatePost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag, $postId)
     {
         $url = 'https://www.tistory.com/apis/post/modify';
-
-        Logger::log("updatePost, postId = ", $postId);
 
         if (!isset($postId)) {
             $this->insertPost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag);
@@ -159,10 +154,7 @@ class ApiManager
 
         foreach ($posts as $k => $v) {
             foreach ($v as $key => $value) {
-                Logger::log("타이틀로 찾기 asdf: " . $value['title']);
-                Logger::log("타이블 title = " . $title);
                 if (stripslashes($value['title']) === stripslashes($title)) {
-                    Logger::log($title . ", id 반환값: " . $value['id']);
                     $id = $value['id'];
                 }
             }
@@ -190,11 +182,7 @@ class ApiManager
 
         foreach ($posts as $k => $v) {
             foreach ($v as $key => $value) {
-                Logger::log("타이틀로 찾기 asdf: " . $value['title'] . $value['date'] . " vs " . $date);
-                Logger::log("타이블 title = " . $title);
-
                 if ($this->decodeCharacters(stripslashes($value['title'])) === $this->decodeCharacters(stripslashes($title))) {
-                    Logger::log($title . ", id 반환값: " . $value['id']);
                     return array(
                         'id' => $value['id'],
                         'url' => $value['postUrl'],
