@@ -43,11 +43,12 @@ if (!$api_mgr->checkAccessToken()) {
                 <!-- 사용자 카테고리 선택 -->
                 <label id="lbl_desc">  <b>
                 <?php
+                // The user account must be 'email' type.
                 $account = $api_mgr->getBlogAccount();
                 if (!isset($account)) {
                     echo "Access 토큰이 정상적으로 발급되지 않았습니다.";
                 } else {
-                    echo $account;
+                    echo esc_html($account);
                 }
                 ?>
                 </b></label>
@@ -65,12 +66,12 @@ if (!$api_mgr->checkAccessToken()) {
 
                 if (isset($post_info['id'])) {
                 ?>
-                <a name="lbl_postLink" href="<?php echo $post_info['url']; ?>">
+                <a name="lbl_postLink" href="<?php echo esc_url($post_info['url']); ?>">
                 <?php
-                echo $post_info['url'];
+                echo esc_url($post_info['url']);
                 ?>
                 </a>
-                <input type="hidden" name="postId" id="postId" value="<?php echo $post_info['id']; ?>"/>
+                <input type="hidden" name="postId" id="postId" value="<?php echo esc_html($post_info['id']); ?>"/>
                 <?php
                 } else {
                     echo "<label id='lbl_desc'>티스토리 블로그에서 해당 글을 찾을 수 없습니다.</label>";
@@ -128,11 +129,11 @@ if (!$api_mgr->checkAccessToken()) {
                     foreach ($categories as $k => $v) {
                         foreach ($v as $key => $value) {
                             if ($value['id'] == $post_info['category_id']) {
-                                echo '<option value="' . $value['id'] . '" selected>' .
-                                $value['label'] . '</option>';
+                                echo '<option value="' . esc_html($value['id']) . '" selected>' .
+                                esc_html($value['label']) . '</option>';
                             } else {
-                                echo '<option value="' . $value['id'] . '">' .
-                                $value['label'] . '</option>';
+                                echo '<option value="' . esc_html($value['id']) . '">' .
+                                esc_html($value['label']) . '</option>';
                             }
                         }
                     }
@@ -152,7 +153,7 @@ if (!$api_mgr->checkAccessToken()) {
 
                 if (isset($tags['tag'])) {
                     for ($i = 0; $i < count($tags['tag']); $i++) {
-                        $tValue .= $tags['tag'][$i] . ", ";
+                        $tValue .= wp_kses_post($tags['tag'][$i]) . ", ";
                     }
                 }
                 echo substr($tValue, 0, -2);
