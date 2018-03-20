@@ -24,7 +24,7 @@ class AuthManager
         if (method_exists('\\tistory_writer\\Logger', 'log')) {
             Logger::log("getAccessToken is called with " . $return_url);
         }
-        
+
         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
 
         $authorization_code = $optionMgr->getOption(OPTION_KEY\AUTH_KEY);
@@ -54,7 +54,6 @@ class AuthManager
         $getUrl .= 'client_id=' . $optionMgr->getOption(OPTION_KEY\CLIENT_ID) . '&';
         $getUrl .= 'redirect_uri=' . $optionMgr->getOption(OPTION_KEY\CALLBACK_URL) . '&response_type=token';
 
-        Logger::log("getAuthToekn에서 " . $getUrl);
         wp_redirect($getUrl);
     }
 }

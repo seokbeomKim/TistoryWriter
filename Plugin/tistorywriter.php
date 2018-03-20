@@ -208,7 +208,10 @@ class TistoryWriter
     public static function handlerSubmit()
     {
         $handlerMgr = self::getManager(FEATURE_KEY\HANDLER);
-        $handlerMgr->handle($_POST['redirect_def']);
+
+        // Validate in handle method
+        $redirectDef = wp_kses_post($_POST['redirect_def']);
+        $handlerMgr->handle($redirectDef);
     }
 
     public static function redirectPage()
@@ -220,17 +223,17 @@ class TistoryWriter
     public static function postUpdate()
     {
         if (isset($_POST['post_title']) && isset($_POST['content'])) {
-            $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
+            $apiMgr     = self::getManager(FEATURE_KEY\TISTORY_API);
 
-            // 글 정보
-            $title = stripslashes($_POST['post_title']);
-            $content = stripslashes($_POST['post_content']);
-            $content = preg_replace("/\r\n|\r|\n/", '<br/>', $content);
-            $category_id = $_POST['select_category'];
-            $visibility = $_POST['select_visibility'];
-            $isProtected = isset($_POST['checkProtected']) ? true : false;
+            $title      = stripslashes(wp_kses_post($_POST['post_title']));
+            $content    = stripslashes(wp_kses_post($_POST['post_content']));
+            $content    = nl2br($content);
+            $tag        = wp_kses_post($_POST['input_tag']);
+
+            $category_id    = wp_kses_post($_POST['select_category']);
+            $visibility     = wp_kses_post($_POST['select_visibility']);
+            $isProtected    = isset($_POST['checkProtected']) ? true : false;
             $isAllowComment = isset($_POST['checkAllowComment']) ? true : false;
-            $tag = $_POST['input_tag'];
 
             $apiMgr->insertPost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag);
         }
@@ -239,19 +242,18 @@ class TistoryWriter
     public static function editPost()
     {
         if (isset($_POST['post_title']) && isset($_POST['content'])) {
-            $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
+            $apiMgr     = self::getManager(FEATURE_KEY\TISTORY_API);
 
-            // 글 정보
-            $title = stripslashes($_POST['post_title']);
-            $content = stripslashes($_POST['post_content']);
-            $content = preg_replace("/\r\n|\r|\n/", '<br/>', $content);
+            $title      = stripslashes(wp_kses_post($_POST['post_title']));
+            $content    = stripslashes(wp_kses_post($_POST['post_content']));
+            $content    = nl2br($content);
+            $tag        = wp_kses_post($_POST['input_tag']);
 
-            $category_id = $_POST['select_category'];
-            $visibility = $_POST['select_visibility'];
-            $isProtected = isset($_POST['checkProtected']) ? true : false;
+            $category_id    = wp_kses_post($_POST['select_category']);
+            $visibility     = wp_kses_post($_POST['select_visibility']);
+            $isProtected    = isset($_POST['checkProtected']) ? true : false;
             $isAllowComment = isset($_POST['checkAllowComment']) ? true : false;
-            $tag = $_POST['input_tag'];
-            $postId = $_POST['postId'];
+            $postId         = wp_kses_post($_POST['postId']);
 
             $apiMgr->updatePost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag, $postId);
         }
@@ -268,12 +270,13 @@ class TistoryWriter
     public static function insertPost($post_id, $post, $update)
     {
         $apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
-        $flag = isset($_POST['turnIntegratationOff']);
+        $flag   = isset($_POST['turnIntegratationOff']);
 
         if (!$flag && isset($_POST['postId'])) {
             if (self::$count == 0) {
                 self::$count++;
-                if ($_POST['postId'] == -1) {
+                $ti = (int)wp_kses_post($_POST['postId']);
+                if ($ti == -1) {
                     /* 새로운 포스트 업로드 */
                     self::postUpdate();
                 } else {

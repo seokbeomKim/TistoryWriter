@@ -19,7 +19,10 @@ class HandlerManager
 
     public function handle($redirectDef)
     {
-        $this->handlers[$redirectDef]();
+        // Validate $redirectDef value
+        if (array_key_exists($redirectDef, $this->handlers)) {
+            $this->handlers[$redirectDef]();
+        }
     }
 
     /**
@@ -32,10 +35,10 @@ class HandlerManager
         $callback_uri_temp = get_admin_url() . 'options-general.php?page=tistory_writer';
 
         /* 옵션 설정 */
-        $optionMgr->setOption(OPTION_KEY\CLIENT_ID, $_POST['client_id']);
-        $optionMgr->setOption(OPTION_KEY\SECRET_KEY, $_POST['secret_key']);
-        $optionMgr->setOption(OPTION_KEY\BLOG_NAME, $_POST['blogname']);
-        $optionMgr->setOption(OPTION_KEY\CALLBACK_URL, $callback_uri_temp);
+        $optionMgr->setOption(OPTION_KEY\CLIENT_ID, wp_kses_post($_POST['client_id']));
+        $optionMgr->setOption(OPTION_KEY\SECRET_KEY, wp_kses_post($_POST['secret_key']));
+        $optionMgr->setOption(OPTION_KEY\BLOG_NAME, wp_kses_post($_POST['blogname']));
+        $optionMgr->setOption(OPTION_KEY\CALLBACK_URL, wp_kses_post($callback_uri_temp));
 
         wp_safe_redirect(get_admin_url() . "/options-general.php?page=tistory_writer");
     }
@@ -46,7 +49,7 @@ class HandlerManager
     public function handlerAccessCode()
     {
         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
-        $optionMgr->setOption(OPTION_KEY\ACCESS_TOKEN, $_POST['access_code']);
+        $optionMgr->setOption(OPTION_KEY\ACCESS_TOKEN, wp_kses_post($_POST['access_code']));
 
         wp_safe_redirect(get_admin_url() . "/options-general.php?page=tistory_writer");
     }
