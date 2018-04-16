@@ -1,6 +1,7 @@
 <link href="markdown.css" rel="stylesheet"></link>
 
 # Tistory Writer
+* 현재 티스토리의 OpenAPI가 막혀 있어 문의 중입니다. 티스토리 측 답변 받는대로 조치하겠습니다.*
 워드프레스용 티스토리 연동 플러그인 입니다.
 사용 중 발견되는 버그는 <sukbeom.kim@gmail.com>으로 메일 주시기 바랍니다.
 
