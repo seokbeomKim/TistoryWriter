@@ -145,7 +145,6 @@ namespace tistory_writer;
                         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
                         $access_token = $optionMgr->getOption(OPTION_KEY\ACCESS_TOKEN);
                         $apiMgr = TistoryWriter::getManager(FEATURE_KEY\TISTORY_API);
-                        Logger::log("access token in main: " . $access_token);
 
                         if (isset($access_token) && $apiMgr->checkAccessToken()) {
                             echo $access_token;
