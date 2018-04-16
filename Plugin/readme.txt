@@ -1,4 +1,4 @@
-=== Tistory Writer ===
+﻿=== Tistory Writer ===
 Contributors: Sukbeom Kim
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GF6ZFVWQ4U3PU
 Tags: content, tistory, development, integration
@@ -41,5 +41,8 @@ License URI: https://mit-license.org/
 6. 블로그에 글이 자동으로 업로드 된 것을 확인할 수 있습니다.
 
 == Changelog ==
+= 1.1 =
+* 티스토리 연동 문제 수정 
+
 = 1.0 =
 * 기본 기능 구현 및 최초 배포
