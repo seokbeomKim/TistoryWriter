@@ -38,7 +38,7 @@ class ApiManager
         $data = array(
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN)
         );
-        $response = wp_remote_post($url, array(
+        $response = wp_remote_request($url, array(
             'body' => $data,
             'output' => 'xml',
         ));
@@ -58,7 +58,7 @@ class ApiManager
         $data = array(
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN)
         );
-        $response = wp_remote_post($url, array(
+        $response = wp_remote_request($url, array(
             'body' => $data,
             'output' => 'xml',
         ));
@@ -76,7 +76,7 @@ class ApiManager
             'blogName' => get_option(OPTION_KEY\BLOG_NAME),
             'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
         );
-        $response = wp_remote_post($url, array(
+        $response = wp_remote_request($url, array(
             'body' => $data,
             'output' => 'xml',
         ));
@@ -170,7 +170,7 @@ class ApiManager
             'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
             'sort' => 'date',
         );
-        $response = wp_remote_post($url, array(
+        $response = wp_remote_request($url, array(
             'body' => $data,
             'output' => 'xml',
         ));
@@ -210,7 +210,7 @@ class ApiManager
             'postId' => $post_id,
         );
 
-        $response = wp_remote_post($url, array(
+        $response = wp_remote_request($url, array(
             'body' => $data,
             'output' => 'xml',
         ));
@@ -230,7 +230,7 @@ class ApiManager
             'postId' => $post_id,
         );
 
-        $response = wp_remote_post($url, array(
+        $response = wp_remote_request($url, array(
             'body' => $data,
             'output' => 'xml',
         ));
