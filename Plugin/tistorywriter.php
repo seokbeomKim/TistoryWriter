@@ -255,7 +255,9 @@ class TistoryWriter
             $isAllowComment = isset($_POST['checkAllowComment']) ? true : false;
             $postId         = wp_kses_post($_POST['postId']);
 
-            $apiMgr->updatePost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag, $postId);
+            if (!wp_is_post_autosave($postId)) {
+                $apiMgr->updatePost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag, $postId);
+            }
         }
     }
 

@@ -38,18 +38,16 @@ class ApiManager
         $data = array(
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN)
         );
-        $response = wp_remote_request($url, array(
-            'body' => $data,
-            'output' => 'xml',
-        ));
-        $body = wp_remote_retrieve_body($response);
-        $xml = simplexml_load_string($body);
 
-        if ($xml->status == 200) {
-            return true;
-        } else {
-            return false;
+        $xml = $this->requestPost($url, $data);
+        if ($xml == null) {
+            if (method_exists('\\tistory_writer\\Logger', 'log')) {
+                Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
+                return false;
+            }
         }
+
+        return true;
     }
 
     public function getBlogAccount()
@@ -58,14 +56,80 @@ class ApiManager
         $data = array(
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN)
         );
+
+        $xml = $this->requestPost($url, $data);
+        if ($xml == null) {
+            if (method_exists('\\tistory_writer\\Logger', 'log')) {
+                Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
+            }
+            return null;
+        }
+
+        return $xml->item->id;
+    }
+
+    public function requestPost($url, $data)
+    {
+        // Step 1. POST
+        $response = wp_remote_post($url, array(
+            'body' => $data,
+            'output' => 'xml',
+        ));
+
+        $body = wp_remote_retrieve_body($response);
+        $xml = simplexml_load_string($body);
+
+        if ($xml != null && $xml->status == 200) {
+            return $xml;
+        }
+
+        // Try 2. GET
+        $xml = $this->requestGet($url, $data);
+        if ($xml != null && $xml->status == 200) {
+            return $xml;
+        }
+
+        // Try 3. Request - RAW
+        $xml = $this->requestFallback($url, $data);
+        if ($xml != null && $xml->status == 200) {
+            return $xml;
+        } else {
+            return null;
+        }
+    }
+
+    public function requestFallback($url, $data)
+    {
         $response = wp_remote_request($url, array(
             'body' => $data,
             'output' => 'xml',
         ));
+
         $body = wp_remote_retrieve_body($response);
         $xml = simplexml_load_string($body);
 
-        return $xml->item->id;
+        if ($xml != null && $xml->status == 200) {
+            return $xml;
+        } else {
+            return null;
+        }
+    }
+
+    public function requestGet($url, $data)
+    {
+        $response = wp_remote_get($url, array(
+            'body' => $data,
+            'output' => 'xml',
+        ));
+
+        $body = wp_remote_retrieve_body($response);
+        $xml = simplexml_load_string($body);
+
+        if ($xml != null && $xml->status == 200) {
+            return $xml;
+        } else {
+            return null;
+        }
     }
 
     public function getCategoryList()
@@ -76,12 +140,12 @@ class ApiManager
             'blogName' => get_option(OPTION_KEY\BLOG_NAME),
             'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
         );
-        $response = wp_remote_request($url, array(
-            'body' => $data,
-            'output' => 'xml',
-        ));
-        $body = wp_remote_retrieve_body($response);
-        $xml = simplexml_load_string($body);
+
+        $xml = $this->requestPost($url, $data);
+        if ($xml == null) {
+            return null;
+        }
+
         $array = json_decode(json_encode((array)$xml->item->categories), true);
         return $array;
     }
@@ -101,10 +165,8 @@ class ApiManager
             'acceptComment' => $isAllowComment,
             'tag' => $tag
         );
-        $response = wp_remote_post($url, array(
-            'body' => $data,
-            'output' => 'xml',
-        ));
+
+        $this->requestPost($url, $data);
     }
 
     public function updatePost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag, $postId)
@@ -126,10 +188,8 @@ class ApiManager
                 'acceptComment' => $isAllowComment,
                 'tag' => $tag,
             );
-            $response = wp_remote_post($url, array(
-                'body' => $data,
-                'output' => 'xml',
-            ));
+
+            $this->requestPost($url, $data);
         }
     }
 
@@ -142,23 +202,32 @@ class ApiManager
             'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
             'sort' => 'date',
         );
-        $response = wp_remote_post($url, array(
-            'body' => $data,
-            'output' => 'xml',
-        ));
-        $rValue = "";
 
-        $body = wp_remote_retrieve_body($response);
-        $xml = simplexml_load_string($body);
-        $posts = json_decode(json_encode((array)$xml->item->posts), true);
-
-        foreach ($posts as $k => $v) {
-            foreach ($v as $key => $value) {
-                if (stripslashes($value['title']) === stripslashes($title)) {
-                    $id = $value['id'];
-                }
+        $xml = $this->requestPost($url, $data);
+        if ($xml == null) {
+            if (method_exists('\\tistory_writer\\Logger', 'log')) {
+                Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
+                return;
             }
         }
+
+        $posts = json_decode(json_encode((array)$xml->item->posts), true);
+
+        if (is_array($posts) && isset($posts)) {
+            foreach ($posts as $k => $v) {
+                if (is_array($v) && isset($v)) {
+                    foreach ($v as $key => $value) {
+                        if (stripslashes($value['title']) === stripslashes($title)) {
+                            $id = $value['id'];
+                        }
+                    }
+                } else {
+                    if (method_exists('\\tistory_writer\\Logger', 'log')) {
+                        Logger::log("getPostIdWithTitle, 얻어온 post id 값 이상");
+                    }
+                }
+            } // foreach ($post as $k => $v) ends here
+        } // if statement ends here
     }
 
     public function getPostInfoWithTitle($title, $date)
@@ -170,26 +239,35 @@ class ApiManager
             'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
             'sort' => 'date',
         );
-        $response = wp_remote_request($url, array(
-            'body' => $data,
-            'output' => 'xml',
-        ));
-        $rValue = "";
 
-        $body = wp_remote_retrieve_body($response);
-        $xml = simplexml_load_string($body);
+        $xml = $this->requestPost($url, $data);
+        if ($xml == null) {
+            if (method_exists('\\tistory_writer\\Logger', 'log')) {
+                Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
+            }
+            return;
+        }
+
         $posts = json_decode(json_encode((array)$xml->item->posts), true);
 
-        foreach ($posts as $k => $v) {
-            foreach ($v as $key => $value) {
-                if ($this->decodeCharacters(stripslashes($value['title'])) === $this->decodeCharacters(stripslashes($title))) {
-                    return array(
-                        'id' => $value['id'],
-                        'url' => $value['postUrl'],
-                        'date' => $value['date'],
-                        'visibility' => $value['visibility'],
-                        'category_id' => $value['categoryId'],
-                    );
+        if (is_array($posts) && isset($posts)) {
+            foreach ($posts as $k => $v) {
+                if (is_array($v) && isset($v)) {
+                    foreach ($v as $key => $value) {
+                        if ($this->decodeCharacters(stripslashes($value['title'])) === $this->decodeCharacters(stripslashes($title))) {
+                            return array(
+                                'id' => $value['id'],
+                                'url' => $value['postUrl'],
+                                'date' => $value['date'],
+                                'visibility' => $value['visibility'],
+                                'category_id' => $value['categoryId'],
+                            );
+                        }
+                    }
+                } else {
+                    if (method_exists('\\tistory_writer\\Logger', 'log')) {
+                        Logger::log("getPostInfoWithTitle, 얻어온 post 반환값 이상");
+                    }
                 }
             }
         }
@@ -210,13 +288,13 @@ class ApiManager
             'postId' => $post_id,
         );
 
-        $response = wp_remote_request($url, array(
-            'body' => $data,
-            'output' => 'xml',
-        ));
-
-        $body = wp_remote_retrieve_body($response);
-        $xml = simplexml_load_string($body);
+        $xml = $this->requestPost($url, $data);
+        if ($xml == null) {
+            if (method_exists('\\tistory_writer\\Logger', 'log')) {
+                Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
+            }
+            return null;
+        }
         return $xml->item->acceptComment;
     }
 
@@ -230,13 +308,13 @@ class ApiManager
             'postId' => $post_id,
         );
 
-        $response = wp_remote_request($url, array(
-            'body' => $data,
-            'output' => 'xml',
-        ));
-
-        $body = wp_remote_retrieve_body($response);
-        $xml = simplexml_load_string($body);
+        $xml = $this->requestPost($url, $data);
+        if ($xml == null) {
+            if (method_exists('\\tistory_writer\\Logger', 'log')) {
+                Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
+            }
+            return null;
+        }
 
         $tags = json_decode(json_encode((array)$xml->item->tags), true);
 
