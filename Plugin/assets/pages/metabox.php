@@ -46,7 +46,7 @@ if (!$api_mgr->checkAccessToken()) {
                 // The user account must be 'email' type.
                 $account = $api_mgr->getBlogAccount();
                 if (!isset($account)) {
-                    echo "Access 토큰이 정상적으로 발급되지 않았습니다jf.";
+                    echo "Access 토큰이 정상적으로 발급되지 않았습니다.";
                 } else {
                     echo esc_html($account);
                 }

@@ -3,8 +3,8 @@ Contributors: Sukbeom Kim
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GF6ZFVWQ4U3PU
 Tags: content, tistory, development, integration
 Requires at least: 1.5
-Tested up to: 4.1.1
-Stable tag: 1.0.1
+Tested up to: 4.9.5
+Stable tag: 1.0.2
 License: MIT License
 License URI: https://mit-license.org/
 
@@ -41,6 +41,10 @@ License URI: https://mit-license.org/
 6. 블로그에 글이 자동으로 업로드 된 것을 확인할 수 있습니다.
 
 == Changelog ==
+= 1.0.2 =
+* 포스팅 글 작성 중 자동 저장 시마다 블로그에 글 포스팅되는 결함 해결
+* 플러그인 내 API 사용 방식 개선
+
 = 1.0.1 =
 * 티스토리 연동 문제 수정 
 
