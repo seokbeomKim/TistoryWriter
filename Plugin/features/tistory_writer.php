@@ -23,6 +23,7 @@ use const tistory_writer\OPTION_KEY\SELECTED_BLOG;
  */
 class TistoryWriter
 {
+
 	private static $instance;
 
 	private $class_mgr;

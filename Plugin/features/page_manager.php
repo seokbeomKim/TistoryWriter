@@ -41,7 +41,9 @@ class PageManager
     public function addOptionPage()
     {
         if (current_user_can('manage_options')) {
-            add_options_page('Tistory Writer', 'Tistory Writer', 'manage_options', 'tistory_writer', array($this, 'getAdminSettingPage'));
+            add_options_page('Tistory Writer',
+	            'Tistory Writer', 'manage_options', 'tistory_writer',
+	            array($this, 'getAdminSettingPage'));
         } else {
             // Doing user
         }
@@ -56,12 +58,6 @@ class PageManager
     public function getUserSettingPage()
     {
         $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR. 'settingUser.php';
-        require_once($pagePath);
-    }
-
-    public function getOAuthPage()
-    {
-        $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR . 'auth.php';
         require_once($pagePath);
     }
 

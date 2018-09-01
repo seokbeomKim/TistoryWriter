@@ -11,7 +11,7 @@ class ScriptManager
 {
     /* Members */
     public $files_css = array (
-        "main" => "css\main.css",
+        "main" => "css\setting.css",
         "metabox" => "css\metabox.css",
     );
 
@@ -90,7 +90,7 @@ class ScriptManager
 
     public function registerStyleFiles()
     {
-        $path = join('/', array(PLUGIN_URL,'assets', 'css','main.css'));
+        $path = join('/', array(PLUGIN_URL,'assets', 'css','setting.css'));
         wp_register_style('tistory-writer-main', $path);
 
         $path = join('/', array(PLUGIN_URL,'assets', 'css','metabox.css'));

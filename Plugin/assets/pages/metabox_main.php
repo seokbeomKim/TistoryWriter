@@ -1,10 +1,11 @@
 <?php
 namespace tistory_writer;
 
+global $post;
+
 use const tistory_writer\ERRORS\ACCESS_TOKEN_EXPIRED;
 use const tistory_writer\FEATURE_KEY\OPTION;
 use const tistory_writer\FEATURE_KEY\TISTORY_API;
-use const tistory_writer\OPTION_KEY\CLIENT_ID;
 use const tistory_writer\OPTION_KEY\REDIRECT_URI;
 use const tistory_writer\OPTION_KEY\SELECTED_BLOG;
 
@@ -29,10 +30,6 @@ else {
 
 <div id="tw_metabox">
     <style>
-        .material-icons {
-            vertical-align: middle;
-        }
-
         .cell-content {
             vertical-align: middle;
         }
@@ -107,7 +104,7 @@ else {
                 <label id="lbl_postLink">
                 <?php
 				$post_info = $api_mgr->getPostInfoWithTitle($post->post_title, get_the_date("Y-m-d h:i:s", $post->ID));
-				$acceptComment = $api_mgr->getVisibilityWithPostId($post_info['id']);
+
 				if (isset($post_info['id'])) {
 					?>
 					<a href="<?php echo esc_url($post_info['url']); ?>">
@@ -163,14 +160,19 @@ else {
 		<div class="tw-row">
 			<div class="tw-entryname tw-cell">분류 선택</div>
 			<div class="tw-cell">
-				<select name="select_category" id="select_category" ?>">
+				<select name="select_category" id="select_category">
 					<?php
 					$categories = $api_mgr->getCategoryList();
 
 					if (!is_null($categories)) {
 						foreach ( $categories as $k => $v ) {
-							echo '<option value="' . esc_html( $v['id'] ) . '">' .
-							     esc_html( $v['label'] ) . '</option>';
+							if ( $v['id'] == $post_info['category_id'] ) {
+								echo '<option value="' . esc_html( $v['id'] ) . '" selected="selected" >' .
+								     esc_html( $v['label'] ) . '</option>';
+							} else {
+								echo '<option value="' . esc_html( $v['id'] ) . '">' .
+								     esc_html( $v['label'] ) . '</option>';
+							}
 						}
 					}
 					?>
@@ -191,6 +193,7 @@ else {
 						$tValue .= wp_kses_post($tags['tag'][$i]) . ", ";
 					}
 				}
+
 				echo substr($tValue, 0, -2);
 
 				?>" />

@@ -1,7 +1,7 @@
 <?php
 namespace tistory_writer;
 ?>
-<div class="intro_div mdl-tabs__panel" id="setting_step2-panel">
+<div class="tistory_writer intro_div mdl-tabs__panel" id="setting_step2-panel">
     <style>
         .listitem {
             width: 430px;

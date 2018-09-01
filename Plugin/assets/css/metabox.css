@@ -1,40 +1,20 @@
-#tw_metabox table {
-    padding: 10px;
-}
-
-#tw_metabox tr {
-    line-height:30px;
-}
-
-#tw_metabox .td_label {
-    width: 200px;
-}
-
-#checkAllowComment {
+#tw_metabox #checkAllowComment {
     margin-left: 5px;
 }
 
-#checkMakePublic {
+#tw_metabox #checkMakePublic {
    margin-left: 5px;
 }
 
-#checkProtected {
-    margin-left: 15px;
-}
-
-#select_visibility {
-    width: 100px;
-}
-
-#select_category {
+#tw_metabox #select_category {
     width: 200px;
 }
 
-#lbl_desc {
+#tw_metabox #lbl_desc {
     margin-left: 3px;
 }
 
-#input_tag {
+#tw_metabox #input_tag {
     width: 200px;
 }
 
@@ -42,13 +22,11 @@
 #tw_metabox .tw-row { display: table-row; height: 50px; vertical-align: middle;}
 #tw_metabox .tw-cell { display: table-cell; padding: 5px; vertical-align:  middle;  }
 
-#tw_metabox .tw-entryname { width: 75px;}
-
-#select_blogname {
+#tw_metabox #select_blogname {
     width: 200px;
 }
 
-.dim-overlay {
+#tw_metabox .dim-overlay {
     background-color: rgba(0,0,0,0.5);
     position:fixed;
     left:0;

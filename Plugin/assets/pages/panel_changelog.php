@@ -3,7 +3,6 @@
         <main class="mdl-layout__content" style="width:100%;">
             <div class="page-content">
                 <h4>업데이트 내역</h4>
-
                 <div class="mdl-cell mdl-cell--8-col mdl-card__supporting-text no-padding">
                     <h6>1.0.3</h6>
                     <ul>

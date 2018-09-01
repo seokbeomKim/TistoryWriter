@@ -22,22 +22,18 @@ $(document).ready(function() {
     $('#checkMakePublic').click(function() {
         if ($('#checkMakePublic').attr('value') == '2') {
             $('#checkMakePublic').attr('value', '0');
-            //$('#lblMakePublic').attr('content', '비공개');
         }
         else {
             $('#checkMakePublic').attr('value', '2');
-            //$('#lblMakePublic').attr('content', '공개');
         }
     });
 
     $('#checkAllowComment').click(function() {
         if ($('#checkAllowComment').attr('value') == '2') {
             $('#checkAllowComment').attr('value', '0');
-            //$('#lblAllowComment').attr('content', '비공개');
         }
         else {
             $('#checkAllowComment').attr('value', '1');
-            //$('#lblAllowComment').attr('content', '공개');
         }
     });
 
