@@ -8,8 +8,12 @@
 
 namespace tistory_writer;
 
+if (!class_exists('\\tistory_writer\\TistoryWriter')) {
+	require_once(PLUGIN_DIR . 'features' . DIRECTORY_SEPARATOR . 'tistory_writer.php');
+}
+
 if (!class_exists('\\tistory_writer\\OptionManager')) {
-    require_once(PLUGIN_DIR . 'features' . DIRECTORY_SEPARATOR . 'option_manager.php');
+	require_once(PLUGIN_DIR . 'features' . DIRECTORY_SEPARATOR . 'option_manager.php');
 }
 
 if (!class_exists('\\tistory_writer\\PageManager')) {

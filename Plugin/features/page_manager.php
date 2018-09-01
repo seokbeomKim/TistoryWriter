@@ -24,6 +24,9 @@ namespace tistory_writer;
 
 class PageManager
 {
+	public static $PAGE_SETTING = 'SETTING';
+	public static $PAGE_METABOX = 'METABOX';
+
     public $setting_page;
     /**
     * 클래스 생성자
@@ -46,25 +49,25 @@ class PageManager
 
     public function getAdminSettingPage()
     {
-        $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR . 'settingAdmin.php';
-        include($pagePath);
+        $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR . 'setting.php';
+        require_once($pagePath);
     }
 
     public function getUserSettingPage()
     {
         $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR. 'settingUser.php';
-        include($pagePath);
+        require_once($pagePath);
     }
 
     public function getOAuthPage()
     {
         $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR . 'auth.php';
-        include($pagePath);
+        require_once($pagePath);
     }
 
     public function getMetaboxPage()
     {
-        $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR . 'metabox.php';
-        include($pagePath);
+        $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR . 'metabox_tw_widget.php';
+        require_once($pagePath);
     }
 }

@@ -13,6 +13,9 @@
 
 namespace tistory_writer;
 
+use const tistory_writer\OPTION_KEY\CLIENT_ID;
+use const tistory_writer\OPTION_KEY\REDIRECT_URI;
+
 /**
  * 각 기능별 클래스 구현 위한 Abstract Class
  * @category Wordpress_Plugin
@@ -26,6 +29,8 @@ class OptionManager
 {
     public function __construct()
     {
+    	// Set default values
+	    $this->setOption(REDIRECT_URI, get_admin_url() . 'options-general.php?page=tistory_writer');
     }
 
     public function getName()
@@ -61,16 +66,9 @@ class OptionManager
         TistoryWriter::checkSessionAndStart();
 
         if (add_option($name, $value) == false) {
-            update_option($name, $value);
-        } else {
-            return true;
+            return update_option($name, $value);
         }
 
-
-        if (get_option($name) != null) {
-            return true;
-        } else {
-            return true;
-        }
+        return true;
     }
 }

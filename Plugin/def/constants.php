@@ -26,6 +26,7 @@ define(__NAMESPACE__ . '\OPTION_KEY\BLOG_NAME', 'BLOG_NAME');
 define(__NAMESPACE__ . '\OPTION_KEY\AUTH_KEY', 'AUTH_KEY');
 define(__NAMESPACE__ . '\OPTION_KEY\ACCESS_TOKEN', 'ACCESS_TOKEN');
 define(__NAMESPACE__ . '\OPTION_KEY\REDIRECT_URI', 'REDIRECT_URI');
+define(__NAMESPACE__ . '\OPTION_KEY\SELECTED_BLOG', 'SELECTED_BLOG');
 
 /*
  * 페이지 리다이렉션 시 상황 판단 위해 사용하는 상수 정의

@@ -19,6 +19,10 @@ class AuthManager
     {
     }
 
+    public function getAccessCode()
+    {}
+
+
     public function getAccessToken($return_url = null)
     {
         if (method_exists('\\tistory_writer\\Logger', 'log')) {

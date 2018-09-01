@@ -4,10 +4,17 @@ namespace tistory_writer;
 /*
  * 티스토리 연동 시 사용하는 티스토리 API 관리 클래스
  */
+
+const TRY_NUM = 3;
+const CACHE_BLOGINFO = "CACHE_BLOGINFO";
+
 class ApiManager
 {
     public $access_token;
     public $option_mgr;
+
+    // 불필요하게 접근하는 blog Info와 같은 것들을 캐시로 관리함
+    public $cache;
 
     public function __construct()
     {
@@ -34,101 +41,149 @@ class ApiManager
      */
     public function checkAccessToken()
     {
-        $url = 'https://www.tistory.com/apis/blog/info';
-        $data = array(
-            'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN)
-        );
+        $rvalue = $this->getBlogInformation();
 
-        $xml = $this->requestPost($url, $data);
-        if ($xml == null) {
-            if (method_exists('\\tistory_writer\\Logger', 'log')) {
-                Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
-                return false;
-            }
+        if (is_null($rvalue)) {
+        	return false;
         }
+        else {
 
-        return true;
+	        return true;
+        }
     }
 
     public function getBlogAccount()
     {
+    	if (!is_null($this->cache[CACHE_BLOGINFO])) {
+    		return $this->cache[CACHE_BLOGINFO]->item->id;
+	    }
+
         $url = 'https://www.tistory.com/apis/blog/info';
         $data = array(
-            'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN)
+            'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
+	        'output' => 'json'
         );
 
-        $xml = $this->requestPost($url, $data);
-        if ($xml == null) {
+        $result = $this->requestGet($url, $data);
+        if ($result == null || $result->status != 200) {
             if (method_exists('\\tistory_writer\\Logger', 'log')) {
-                Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
+                Logger::log("getBlogAccount, Request에 실패했습니다.");
             }
             return null;
         }
 
-        return $xml->item->id;
+        return $result->item->id;
+    }
+
+    public function getBlogInformation()
+    {
+	    if (!is_null($this->cache[CACHE_BLOGINFO])) {
+		    return $this->cache[CACHE_BLOGINFO]->item->blogs;
+	    }
+
+	    $url = 'https://www.tistory.com/apis/blog/info';
+	    $data = array(
+		    'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
+		    'output' => 'json',
+	    );
+
+	    $result = $this->requestGet($url, $data);
+	    if ($result == null) {
+		    if (method_exists('\\tistory_writer\\Logger', 'log')) {
+			    Logger::log("getBlogInformation, Request에 실패했습니다.");
+		    }
+		    return null;
+	    }
+
+	    $this->cache[CACHE_BLOGINFO] = $result;
+
+	    return $result->item->blogs;
     }
 
     public function requestPost($url, $data)
     {
-        // Step 1. POST
-        $response = wp_remote_post($url, array(
-            'body' => $data,
-            'output' => 'xml',
-        ));
+		$data['output'] = 'json';
 
-        $body = wp_remote_retrieve_body($response);
-        $xml = simplexml_load_string($body);
+	    for ($i = 0; $i < TRY_NUM; $i++) {
+		    $response = wp_remote_post( $url, array(
+			    'body' => $data,
+		    ) );
 
-        if ($xml != null && $xml->status == 200) {
-            return $xml;
-        }
+		    $body   = wp_remote_retrieve_body( $response );
+		    $rvalue = json_decode( $body );
 
-        // Try 2. GET
-        $xml = $this->requestGet($url, $data);
-        if ($xml != null && $xml->status == 200) {
-            return $xml;
-        }
+		    if (is_null($rvalue) && $i == TRY_NUM - 1) {
+	            return $this->requestPostFallback($url, $data);
+		    }
+		    else {
+		    	break;
+		    }
+	    }
 
-        // Try 3. Request - RAW
-        $xml = $this->requestFallback($url, $data);
-        if ($xml != null && $xml->status == 200) {
-            return $xml;
-        } else {
-            return null;
+        if ($rvalue != null && $rvalue->tistory->status == 200) {
+            return $rvalue->tistory;
         }
     }
 
-    public function requestFallback($url, $data)
+    public function requestGetFallback($url, $data)
     {
-        $response = wp_remote_request($url, array(
-            'body' => $data,
-            'output' => 'xml',
-        ));
+	    $builtdata = http_build_query($data);
+	    $opts = array('http' =>
+		                  array(
+			                  'method'  => 'GET',
+			                  'header'  => 'Content-type: application/x-www-form-urlencoded',
+			                  'content' => $builtdata
+		                  )
+	    );
+	    $context  = stream_context_create($opts);
+	    $result = file_get_contents($url, false, $context);
 
-        $body = wp_remote_retrieve_body($response);
-        $xml = simplexml_load_string($body);
-
-        if ($xml != null && $xml->status == 200) {
-            return $xml;
-        } else {
-            return null;
-        }
+        return $result;
     }
+
+	public function requestPostFallback($url, $data)
+	{
+		$builtdata = http_build_query($data);
+		$opts = array('http' =>
+			              array(
+				              'method'  => 'GET',
+				              'header'  => 'Content-type: application/x-www-form-urlencoded',
+				              'content' => $builtdata
+			              )
+		);
+		$context  = stream_context_create($opts);
+		$result = file_get_contents($url, false, $context);
+
+		return $result;
+	}
 
     public function requestGet($url, $data)
     {
+    	// JSON으로 OUTPUT Format 강제
+    	$data['output'] = 'json';
+
         $response = wp_remote_get($url, array(
             'body' => $data,
-            'output' => 'xml',
         ));
 
-        $body = wp_remote_retrieve_body($response);
-        $xml = simplexml_load_string($body);
+        for ($i = 0; $i < TRY_NUM; $i++) {
+	        $body   = wp_remote_retrieve_body( $response );
+	        $decode = json_decode( $body );
 
-        if ($xml != null && $xml->status == 200) {
-            return $xml;
-        } else {
-            return null;
+	        if (is_null($decode)) {
+	        	return $this->requestGetFallback($url, $data);
+	        }
+
+	        $result = $decode->tistory;
+
+	        if ( $result != null && $result->status == 200 ) {
+		        return $result;
+	        } else {
+	        	if ($i == TRY_NUM - 1)
+		            return null;
+	        	else
+	        		;   // TRY AGAIN
+	        }
         }
     }
 
@@ -137,17 +192,22 @@ class ApiManager
         $url = 'https://www.tistory.com/apis/category/list';
         $data = array(
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
-            'blogName' => get_option(OPTION_KEY\BLOG_NAME),
-            'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
+            'blogName' => get_option(OPTION_KEY\SELECTED_BLOG),
+            'targetUrl' => get_option(OPTION_KEY\SELECTED_BLOG),
+	        'output' => 'json',
         );
 
-        $xml = $this->requestPost($url, $data);
-        if ($xml == null) {
+        $result = $this->requestGet($url, $data);
+        if (is_null($result) || empty($result) || $result->status != 200) {
             return null;
         }
 
-        $array = json_decode(json_encode((array)$xml->item->categories), true);
-        return $array;
+		if (isset($result->item->categories) && $result->item->categories != null) {
+			$array = json_decode( json_encode( (array) $result->item->categories ), true );
+			return $array;
+		}
+
+		return null;
     }
 
     public function insertPost($title, $content, $visibility, $category_id, $isProtected, $isAllowComment, $tag)
@@ -156,8 +216,8 @@ class ApiManager
         $url = 'https://www.tistory.com/apis/post/write';
         $data = array (
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
-            'blogName' => get_option(OPTION_KEY\BLOG_NAME),
-            'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
+            'blogName' => get_option(OPTION_KEY\SELECTED_BLOG),
+            'targetUrl' => get_option(OPTION_KEY\SELECTED_BLOG),
             'title' => $title,
             'visibility' => $visibility,
             'category' => $category_id,
@@ -178,8 +238,8 @@ class ApiManager
         } else {
             $data = array (
                 'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
-                'blogName' => get_option(OPTION_KEY\BLOG_NAME),
-                'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
+                'blogName' => get_option(OPTION_KEY\SELECTED_BLOG),
+                'targetUrl' => get_option(OPTION_KEY\SELECTED_BLOG),
                 'title' => $title,
                 'postId' => $postId,
                 'visibility' => $visibility,
@@ -198,12 +258,12 @@ class ApiManager
         $url = 'https://www.tistory.com/apis/post/list';
         $data = array (
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
-            'blogName' => get_option(OPTION_KEY\BLOG_NAME),
-            'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
+            'blogName' => get_option(OPTION_KEY\SELECTED_BLOG),
+            'targetUrl' => get_option(OPTION_KEY\SELECTED_BLOG),
             'sort' => 'date',
         );
 
-        $xml = $this->requestPost($url, $data);
+        $xml = $this->requestGet($url, $data);
         if ($xml == null) {
             if (method_exists('\\tistory_writer\\Logger', 'log')) {
                 Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
@@ -230,17 +290,20 @@ class ApiManager
         } // if statement ends here
     }
 
-    public function getPostInfoWithTitle($title, $date)
+    public function getPostInfoWithTitle($title)
     {
+    	if (is_null($title) || empty($title)) {
+    		return;
+	    }
         $url = 'https://www.tistory.com/apis/post/list';
         $data = array (
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
-            'blogName' => get_option(OPTION_KEY\BLOG_NAME),
-            'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
+            'blogName' => get_option(OPTION_KEY\SELECTED_BLOG),
+            'targetUrl' => get_option(OPTION_KEY\SELECTED_BLOG),
             'sort' => 'date',
         );
 
-        $xml = $this->requestPost($url, $data);
+        $xml = $this->requestGet($url, $data);
         if ($xml == null) {
             if (method_exists('\\tistory_writer\\Logger', 'log')) {
                 Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
@@ -253,17 +316,15 @@ class ApiManager
         if (is_array($posts) && isset($posts)) {
             foreach ($posts as $k => $v) {
                 if (is_array($v) && isset($v)) {
-                    foreach ($v as $key => $value) {
-                        if ($this->decodeCharacters(stripslashes($value['title'])) === $this->decodeCharacters(stripslashes($title))) {
-                            return array(
-                                'id' => $value['id'],
-                                'url' => $value['postUrl'],
-                                'date' => $value['date'],
-                                'visibility' => $value['visibility'],
-                                'category_id' => $value['categoryId'],
-                            );
-                        }
-                    }
+	                if ($this->decodeCharacters(stripslashes($v['title'])) === $this->decodeCharacters(stripslashes($title))) {
+		                return array(
+			                'id' => $v['id'],
+			                'url' => $v['postUrl'],
+			                'date' => $v['date'],
+			                'visibility' => $v['visibility'],
+			                'category_id' => $v['categoryId'],
+		                );
+	                }
                 } else {
                     if (method_exists('\\tistory_writer\\Logger', 'log')) {
                         Logger::log("getPostInfoWithTitle, 얻어온 post 반환값 이상");
@@ -278,37 +339,93 @@ class ApiManager
         return mb_convert_encoding($data, 'UTF-8', 'HTML-ENTITIES');
     }
 
+	public function getDetailInfoWithPostId($post_id)
+	{
+		if (is_null($post_id) || empty($post_id)) {
+			return null;
+		}
+
+		$url = 'https://www.tistory.com/apis/post/read';
+		$data = array (
+			'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
+			'blogName' => get_option(OPTION_KEY\SELECTED_BLOG),
+			'targetUrl' => get_option(OPTION_KEY\SELECTED_BLOG),
+			'postId' => $post_id,
+		);
+
+		$xml = $this->requestGet($url, $data);
+		if ($xml == null) {
+			if (method_exists('\\tistory_writer\\Logger', 'log')) {
+				Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
+			}
+			return null;
+		}
+		return $xml->item;
+	}
+
     public function getVisibilityWithPostId($post_id)
     {
+    	if (is_null($post_id) || empty($post_id)) {
+    		return null;
+	    }
+
         $url = 'https://www.tistory.com/apis/post/read';
         $data = array (
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
-            'blogName' => get_option(OPTION_KEY\BLOG_NAME),
-            'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
+            'blogName' => get_option(OPTION_KEY\SELECTED_BLOG),
+            'targetUrl' => get_option(OPTION_KEY\SELECTED_BLOG),
             'postId' => $post_id,
         );
 
-        $xml = $this->requestPost($url, $data);
+        $xml = $this->requestGet($url, $data);
         if ($xml == null) {
             if (method_exists('\\tistory_writer\\Logger', 'log')) {
                 Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
             }
             return null;
         }
-        return $xml->item->acceptComment;
+        return $xml->item->visibility;
     }
+
+	public function getAllowCommentWithPostId($post_id)
+	{
+		if (is_null($post_id) || empty($post_id)) {
+			return null;
+		}
+
+		$url = 'https://www.tistory.com/apis/post/read';
+		$data = array (
+			'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
+			'blogName' => get_option(OPTION_KEY\SELECTED_BLOG),
+			'targetUrl' => get_option(OPTION_KEY\SELECTED_BLOG),
+			'postId' => $post_id,
+		);
+
+		$xml = $this->requestGet($url, $data);
+		if ($xml == null) {
+			if (method_exists('\\tistory_writer\\Logger', 'log')) {
+				Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
+			}
+			return null;
+		}
+		return $xml->item->acceptComment;
+	}
 
     public function getTagsWithPostId($post_id)
     {
+    	if (is_null($post_id) || empty($post_id)) {
+    		return null;
+	    }
+
         $url = 'https://www.tistory.com/apis/post/read';
         $data = array (
             'access_token' => get_option(OPTION_KEY\ACCESS_TOKEN),
-            'blogName' => get_option(OPTION_KEY\BLOG_NAME),
-            'targetUrl' => get_option(OPTION_KEY\BLOG_NAME),
+            'blogName' => get_option(OPTION_KEY\SELECTED_BLOG),
+            'targetUrl' => get_option(OPTION_KEY\SELECTED_BLOG),
             'postId' => $post_id,
         );
 
-        $xml = $this->requestPost($url, $data);
+        $xml = $this->requestGet($url, $data);
         if ($xml == null) {
             if (method_exists('\\tistory_writer\\Logger', 'log')) {
                 Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");

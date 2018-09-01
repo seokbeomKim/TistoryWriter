@@ -1,17 +1,21 @@
-#tw_metabox .table {
+#tw_metabox table {
     padding: 10px;
 }
 
-#tw_metabox .tr {
+#tw_metabox tr {
     line-height:30px;
 }
 
 #tw_metabox .td_label {
-    width: 150px;
+    width: 200px;
 }
 
 #checkAllowComment {
-    margin-left: 10px;
+    margin-left: 5px;
+}
+
+#checkMakePublic {
+   margin-left: 5px;
 }
 
 #checkProtected {
@@ -34,10 +38,21 @@
     width: 200px;
 }
 
-#turnIntegratationOff {
-    margin-top: 1px;
-    margin-left: 14px;
+#tw_metabox .tw-table { display: table; }
+#tw_metabox .tw-row { display: table-row; height: 50px; vertical-align: middle;}
+#tw_metabox .tw-cell { display: table-cell; padding: 5px; vertical-align:  middle;  }
+
+#tw_metabox .tw-entryname { width: 75px;}
+
+#select_blogname {
+    width: 200px;
 }
 
-#turnOffLbl {
+.dim-overlay {
+    background-color: rgba(0,0,0,0.5);
+    position:fixed;
+    left:0;
+    top: 0;
+    width:100%;
+    height:100%;
 }

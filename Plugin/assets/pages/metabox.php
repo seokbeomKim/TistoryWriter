@@ -30,6 +30,8 @@ if (!$api_mgr->checkAccessToken()) {
     wp_nonce_field('reference_meta_box', 'reference_nonce');
 ?>
 <div id="tw_metabox">
+
+
     <table class="table">
 
         <tr class="tr">
@@ -60,6 +62,7 @@ if (!$api_mgr->checkAccessToken()) {
             </td>
             <td>
                 <?php
+
                 $post_info = $api_mgr->getPostInfoWithTitle($post->post_title, get_the_date("Y-m-d h:i:s", $post->ID));
 
                 $acceptComment = $api_mgr->getVisibilityWithPostId($post_info['id']);
