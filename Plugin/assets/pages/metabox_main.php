@@ -103,9 +103,10 @@ else {
 			<div class="tw-cell">
                 <label id="lbl_postLink">
                 <?php
-				$post_info = $api_mgr->getPostInfoWithTitle($post->post_title, get_the_date("Y-m-d h:i:s", $post->ID));
 
-				if (isset($post_info['id'])) {
+                $post_info = $api_mgr->getPostInfoWithTitle($post->post_title);
+
+                if (isset($post_info)) {
 					?>
 					<a href="<?php echo esc_url($post_info['url']); ?>">
 						<?php
@@ -127,15 +128,14 @@ else {
 			<div class="tw-cell">
                 <span>
                     <?php
-                    $visibility = $api_mgr->getVisibilityWithPostId($post_info['id']);
-                    if ($visibility == 0) {
-                        echo "<input type=\"checkbox\" name=\"checkMakePublic\" value=\"0\" id=\"checkMakePublic\" content=\"비공개\" />";
-                    }
-                    else if ($visibility == 2) {
+
+                    if (isset($post_info) && $api_mgr->getVisibilityWithPostId($post_info['id']) == 2) {
 	                    echo "<input type=\"checkbox\" name=\"checkMakePublic\" value=\"2\" id=\"checkMakePublic\" content=\"공개\" checked />";
                     }
+                    else {
+	                    echo "<input type=\"checkbox\" name=\"checkMakePublic\" value=\"0\" id=\"checkMakePublic\" content=\"비공개\" />";
+                    }
                     ?>
-
                 </span>
             </div>
 		</div>
@@ -145,12 +145,11 @@ else {
 			<div class="tw-cell">
                 <span>
                     <?php
-                    $accept = $api_mgr->getAllowCommentWithPostId($post_info['id']);
-                    if ($accept == 0) {
-                        echo "<input type=\"checkbox\" name=\"checkAllowComment\" value=\"0\" id=\"checkAllowComment\" />";
-                    }
-                    else if ($accept == 1) {
+                    if (isset($post_info) && $api_mgr->getAllowCommentWithPostId($post_info['id']) == 1) {
 	                    echo "<input type=\"checkbox\" name=\"checkAllowComment\" value=\"1\" id=\"checkAllowComment\" checked />";
+                    }
+                    else {
+                        echo "<input type=\"checkbox\" name=\"checkAllowComment\" value=\"0\" id=\"checkAllowComment\" />";
                     }
                     ?>
                 </span>
@@ -166,7 +165,8 @@ else {
 
 					if (!is_null($categories)) {
 						foreach ( $categories as $k => $v ) {
-							if ( $v['id'] == $post_info['category_id'] ) {
+
+							if ( isset($post_info) && $v['id'] == $post_info['category_id'] ) {
 								echo '<option value="' . esc_html( $v['id'] ) . '" selected="selected" >' .
 								     esc_html( $v['label'] ) . '</option>';
 							} else {
@@ -185,16 +185,20 @@ else {
 			<div class="tw-cell">
 				<input type="text" name="input_tag" id="input_tag" value="<?php
 
-				$tags = $api_mgr->getTagsWithPostId($post_info['id']);
-				$tValue = "";
+                if (isset($post_info)) {
+	                $tags = $api_mgr->getTagsWithPostId($post_info['id']);
+	                $tValue = "";
 
-				if (isset($tags['tag'])) {
-					for ($i = 0; $i < count($tags['tag']); $i++) {
-						$tValue .= wp_kses_post($tags['tag'][$i]) . ", ";
-					}
-				}
+	                if (isset($tags['tag'])) {
+		                for ($i = 0; $i < count($tags['tag']); $i++) {
+			                $tValue .= wp_kses_post($tags['tag'][$i]) . ", ";
+		                }
+	                }
 
-				echo substr($tValue, 0, -2);
+	                echo substr($tValue, 0, -2);
+                }
+
+
 
 				?>" />
 			</div>

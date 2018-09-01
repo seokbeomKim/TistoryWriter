@@ -18,7 +18,7 @@ use const tistory_writer\OPTION_KEY\SELECTED_BLOG;
  * @package  Tistory_Writer
  * @author   Sukbeom Kim <sukbeom.kim@gmail.com>
  * @license  GPL v2
- * @version  Release: 0.1
+ * @version  Release: 1.0.4
  * @link     https://github.com/seokbeomKim/TistoryWriter
  */
 class TistoryWriter

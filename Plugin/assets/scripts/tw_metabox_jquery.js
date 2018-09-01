@@ -127,7 +127,7 @@ function ReflectMetadata(data) {
         $("#select_category").val(postvalue['categoryId']);
     }
 
-    if (postvalue != null && postvalue['tags'] != null) {
+    if (postvalue != null && postvalue['tags'] != null && postvalue['tags']['tag'] != null) {
         $("#input_tag").attr('value', postvalue['tags']['tag'].toString());
     }
 

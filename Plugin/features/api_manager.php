@@ -5,7 +5,7 @@ namespace tistory_writer;
  * 티스토리 연동 시 사용하는 티스토리 API 관리 클래스
  */
 
-const TRY_NUM = 3;
+const TRY_NUM = 5;
 const CACHE_BLOGINFO = "CACHE_BLOGINFO";
 
 class ApiManager
@@ -88,7 +88,7 @@ class ApiManager
 	    );
 
 	    $result = $this->requestGet($url, $data);
-	    if ($result == null) {
+	    if ($result == null || is_null($result->item)) {
 		    if (method_exists('\\tistory_writer\\Logger', 'log')) {
 			    Logger::log("getBlogInformation, Request에 실패했습니다.");
 		    }
@@ -104,21 +104,18 @@ class ApiManager
     {
 		$data['output'] = 'json';
 
-	    for ($i = 0; $i < TRY_NUM; $i++) {
-		    $response = wp_remote_post( $url, array(
-			    'body' => $data,
-		    ) );
 
-		    $body   = wp_remote_retrieve_body( $response );
-		    $rvalue = json_decode( $body );
+	    $response = wp_remote_post( $url, array(
+		    'body' => $data,
+	    ) );
 
-		    if (is_null($rvalue) && $i == TRY_NUM - 1) {
-	            return $this->requestPostFallback($url, $data);
-		    }
-		    else {
-		    	break;
-		    }
+	    $body   = wp_remote_retrieve_body( $response );
+	    $rvalue = json_decode( $body );
+
+	    if (is_null($rvalue)) {
+            return json_decode($this->requestPostFallback($url, $data))->tistory;
 	    }
+
 
         if ($rvalue != null && $rvalue->tistory->status == 200) {
             return $rvalue->tistory;
@@ -128,17 +125,17 @@ class ApiManager
     public function requestGetFallback($url, $data)
     {
 	    $builtdata = http_build_query($data);
-	    $opts = array('http' =>
-		                  array(
-			                  'method'  => 'GET',
-			                  'header'  => 'Content-type: application/x-www-form-urlencoded',
-			                  'content' => $builtdata
-		                  )
-	    );
-	    $context  = stream_context_create($opts);
-	    $result = file_get_contents($url, false, $context);
 
-        return $result;
+	    $requestUrl = $url . "?" . $builtdata;
+
+	    for ($i = 0; $i < TRY_NUM; $i++ ) {
+		    $result = file_get_contents($requestUrl);
+		    if ($result != false) {
+			    return $result;
+		    }
+	    }
+
+	    return null;
     }
 
 	public function requestPostFallback($url, $data)
@@ -146,15 +143,21 @@ class ApiManager
 		$builtdata = http_build_query($data);
 		$opts = array('http' =>
 			              array(
-				              'method'  => 'GET',
+				              'method'  => 'POST',
 				              'header'  => 'Content-type: application/x-www-form-urlencoded',
 				              'content' => $builtdata
 			              )
 		);
 		$context  = stream_context_create($opts);
-		$result = file_get_contents($url, false, $context);
 
-		return $result;
+		for ($i = 0; $i < TRY_NUM; $i++ ) {
+			$result = file_get_contents( $url, false, $context );
+			if ($result != false) {
+				return $result;
+			}
+		}
+
+		return null;
 	}
 
     public function requestGet($url, $data)
@@ -171,7 +174,7 @@ class ApiManager
 	        $decode = json_decode( $body );
 
 	        if (is_null($decode)) {
-	        	return $this->requestGetFallback($url, $data);
+	        	return null;
 	        }
 
 	        $result = $decode->tistory;
@@ -180,7 +183,7 @@ class ApiManager
 		        return $result;
 	        } else {
 	        	if ($i == TRY_NUM - 1)
-		            return null;
+		            return json_decode($this->requestGetFallback($url, $data))->tistory;
 	        	else
 	        		;   // TRY AGAIN
 	        }
@@ -198,7 +201,7 @@ class ApiManager
         );
 
         $result = $this->requestGet($url, $data);
-        if (is_null($result) || empty($result) || $result->status != 200) {
+        if (is_null($result) || !isset($result) || empty($result) || $result->status != 200) {
             return null;
         }
 
@@ -402,7 +405,7 @@ class ApiManager
 		);
 
 		$xml = $this->requestGet($url, $data);
-		if ($xml == null) {
+		if ($xml == null || is_null($xml->item)) {
 			if (method_exists('\\tistory_writer\\Logger', 'log')) {
 				Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
 			}
@@ -426,14 +429,14 @@ class ApiManager
         );
 
         $xml = $this->requestGet($url, $data);
-        if ($xml == null) {
+        if (is_null($xml) || is_null($xml->item)) {
             if (method_exists('\\tistory_writer\\Logger', 'log')) {
                 Logger::log("getPostInfoWithTitle, Request에 실패했습니다.");
             }
             return null;
         }
 
-        $tags = json_decode(json_encode((array)$xml->item->tags), true);
+	    $tags = json_decode( json_encode( (array) $xml->item->tags ), true );
 
         return $tags;
     }
