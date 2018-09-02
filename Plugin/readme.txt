@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: content, tistory, development, integration
 Requires at least: 1.5
 Tested up to: 4.9.5
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: MIT License
 License URI: https://mit-license.org/
 
@@ -41,6 +41,10 @@ License URI: https://mit-license.org/
 6. 블로그에 글이 자동으로 업로드 된 것을 확인할 수 있습니다.
 
 == Changelog ==
+= 1.0.5 =
+* 글 작성 시 Access Code 만료된 경우 코드 갱신할 수 있도록 버튼 추가
+* Access Code 만료 시 포스팅 창 내 오류 메시지 출력 제거
+
 = 1.0.4 =
 * 버그 수정
 

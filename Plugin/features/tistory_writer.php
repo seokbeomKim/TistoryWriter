@@ -18,7 +18,7 @@ use const tistory_writer\OPTION_KEY\SELECTED_BLOG;
  * @package  Tistory_Writer
  * @author   Sukbeom Kim <sukbeom.kim@gmail.com>
  * @license  GPL v2
- * @version  Release: 1.0.4
+ * @version  Release: 1.0.5
  * @link     https://github.com/seokbeomKim/TistoryWriter
  */
 class TistoryWriter
@@ -183,12 +183,10 @@ class TistoryWriter
 	public static function getMetaboxData()
 	{
 		$apiMgr   = self::getManager(FEATURE_KEY\TISTORY_API);
-		$postId = "";
 		$title = $_POST['title'];
 
 		$categories = $apiMgr->getCategoryList();
-
-		$postInfo = $apiMgr->getPostInfoWithTitle($title, $postId);
+		$postInfo = $apiMgr->getPostInfoWithTitle($title);
 
 		if (!is_null($postInfo)) {
 			$detail = $apiMgr->getDetailInfoWithPostId( $postInfo['id'] );
@@ -292,6 +290,16 @@ class TistoryWriter
 		$blogInfo = $apiMgr->getBlogInformation();
 
 		wp_die(json_encode($blogInfo));
+	}
+
+	public static function getUrlForAccessToken()
+	{
+		$optionMgr = self::getManager(FEATURE_KEY\OPTION);
+
+		$rvalue = "https://www.tistory.com/oauth/authorize?client_id=" . $optionMgr->getOption(CLIENT_ID) .
+		"&redirect_uri=" . $optionMgr->getOption(REDIRECT_URI) . "&response_type=token";
+
+		wp_die($rvalue);
 	}
 
 	public static function requestAccessCodeWithAuth()

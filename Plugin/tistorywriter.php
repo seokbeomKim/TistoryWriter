@@ -37,7 +37,7 @@ namespace tistory_writer;
 
 defined('ABSPATH') or die('No script kiddies please!');
 
-define(__NAMESPACE__ . '\VERSION', '1.0.4');
+define(__NAMESPACE__ . '\VERSION', '1.0.5');
 define(__NAMESPACE__ . '\MAIN_URL', $_SERVER['HTTP_HOST'] . '/wp-admin/options-general.php?page=tistory_writer');
 define(__NAMESPACE__ . '\PLUGIN_DIR', plugin_dir_path(__FILE__));
 define(__NAMESPACE__ . '\PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -67,6 +67,7 @@ add_action( 'wp_ajax_requestAccessCodeWithAuth', array('tistory_writer\TistoryWr
 add_action( 'wp_ajax_changeSelectedBlog', array('tistory_writer\TistoryWriter', 'changeSelectedBlog') );
 add_action( 'wp_ajax_getMetaboxData', array('tistory_writer\TistoryWriter', 'getMetaboxData') );
 add_action( 'wp_ajax_requestBlogUrl', array('tistory_writer\TistoryWriter', 'requestBlogUrl') );
+add_action( 'wp_ajax_getUrlForAccessToken', array('tistory_writer\TistoryWriter', 'getUrlForAccessToken') );
 
 register_activation_hook(__FILE__, array('tistory_writer\TistoryWriter', 'activatePlugin'));
 register_deactivation_hook(__FILE__, array('tistory_writer\TistoryWriter', 'deactivatePlugin'));

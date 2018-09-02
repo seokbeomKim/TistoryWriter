@@ -1,22 +1,17 @@
+// global variables
+var timer, subwin;
+
 $(document).ready(function() {
 
-    var client_id;
-    var redirect_uri;
+    $("#refresh_access_code").click(function () {
 
-    $('.service-container').each(function() {
-        var container = $(this);
-
-        //client_id = container.data('clientid');
-        redirect_uri = container.data('redirecturi');
-    });
-
-    $('.refresh_access_code').click(function() {
         $.post(tw_ajax.ajax_url, {
             _ajax_nonce: tw_ajax.nonce,
-            action: "refreshAccessCode",
-        }, function (data) {
-
-        });
+            action: "getUrlForAccessToken"
+        }, function(url) {
+            subwin = window.open(url);
+            timer = setInterval(checkChild, 500);
+        })
     });
 
     $('#checkMakePublic').click(function() {
@@ -52,6 +47,13 @@ $(document).ready(function() {
         });
     });
 });
+
+function checkChild() {
+    if (subwin.closed) {
+        clearInterval(timer);
+        location.reload();
+    }
+}
 
 function GetMetaboxData() {
     $.post(tw_ajax.ajax_url, {
@@ -119,7 +121,7 @@ function ReflectMetadata(data) {
             $("#checkAllowComment").prop('checked', true);
         }
         else  {
-            $("#acceptComment").prop('checked', false);
+            $("#checkAllowComment").prop('checked', false);
         }
     }
 

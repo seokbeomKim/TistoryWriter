@@ -129,8 +129,8 @@ class ApiManager
 	    $requestUrl = $url . "?" . $builtdata;
 
 	    for ($i = 0; $i < TRY_NUM; $i++ ) {
-		    $result = file_get_contents($requestUrl);
-		    if ($result != false) {
+		    $result = @file_get_contents($requestUrl);
+		    if (empty($result)) {
 			    return $result;
 		    }
 	    }
@@ -151,7 +151,7 @@ class ApiManager
 		$context  = stream_context_create($opts);
 
 		for ($i = 0; $i < TRY_NUM; $i++ ) {
-			$result = file_get_contents( $url, false, $context );
+			$result = @file_get_contents( $url, false, $context );
 			if ($result != false) {
 				return $result;
 			}

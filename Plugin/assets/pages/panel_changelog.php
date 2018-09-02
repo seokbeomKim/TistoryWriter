@@ -4,6 +4,12 @@
             <div class="page-content">
                 <h4>업데이트 내역</h4>
                 <div class="mdl-cell mdl-cell--8-col mdl-card__supporting-text no-padding">
+                    <h6>1.0.5</h6>
+                    <ul>
+                        <li>글 작성 시 Access Code 만료된 경우 코드 갱신할 수 있도록 버튼 추가</li>
+                        <li>Access Code 만료 시 포스팅 창 내 오류 메시지 출력 제거</li>
+                    </ul>
+
                     <h6>1.0.4</h6>
                     <ul>
                         <li>버그 수정</li>

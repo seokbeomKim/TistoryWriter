@@ -57,16 +57,19 @@ jQuery(document).ready(function($) {
             // 액세스 코드 갱신
             if (opener != null) {
                 var access_code_span = opener.document.getElementById('span_access_code');
-                access_code_span.innerText = access_token;
 
-                var json_data = JSON.parse(data);
+                if (typeof(access_code_span) != "undefined" && access_code_span != null) {
+                    access_code_span.innerText = access_token;
 
-                if (json_data != null) {
-                    // 블로그 정보 갱신
-                    for (var i in json_data) {
-                        var blogurl_span = opener.document.getElementById('blog_url_' + json_data[i].name);
-                        if (blogurl_span != null) {
-                            blogurl_span.innerHTML = "<a href=\"" + json_data[i].url + "\">" + json_data[i].title + "(" + json_data[i].url + ")</a>";
+                    var json_data = JSON.parse(data);
+
+                    if (json_data != null) {
+                        // 블로그 정보 갱신
+                        for (var i in json_data) {
+                            var blogurl_span = opener.document.getElementById('blog_url_' + json_data[i].name);
+                            if (blogurl_span != null) {
+                                blogurl_span.innerHTML = "<a href=\"" + json_data[i].url + "\">" + json_data[i].title + "(" + json_data[i].url + ")</a>";
+                            }
                         }
                     }
                 }

@@ -6,15 +6,14 @@ global $post;
 use const tistory_writer\ERRORS\ACCESS_TOKEN_EXPIRED;
 use const tistory_writer\FEATURE_KEY\OPTION;
 use const tistory_writer\FEATURE_KEY\TISTORY_API;
+use const tistory_writer\OPTION_KEY\ACCESS_TOKEN;
+use const tistory_writer\OPTION_KEY\CLIENT_ID;
 use const tistory_writer\OPTION_KEY\REDIRECT_URI;
 use const tistory_writer\OPTION_KEY\SELECTED_BLOG;
 
 $isAccessTokenAvailable = false;
 
 $api_mgr = TistoryWriter::getManager(TISTORY_API);
-$option_mgr = TistoryWriter::getManager(OPTION);
-
-echo "<div class=\"service-container\" data-redirecturi=\"" . $option_mgr->getOption(REDIRECT_URI) . "\"></div>";
 
 // 액세스 토큰 유효성 검사
 if ($api_mgr->checkAccessToken()) {
@@ -22,12 +21,18 @@ if ($api_mgr->checkAccessToken()) {
 }
 
 if (!$isAccessTokenAvailable) {
-    echo "<div id=\"div_require_token\" style='padding: 10px; vertical-align:center;'>";
-	echo "<span style='padding: 5px; vertical-align: center; height: 50px;'>액세스 토큰이 설정되지 않았습니다. 계정 설정을 먼저 해주세요.</span></div>";
-}
-else {
 ?>
+<div id="div_require_token" style="padding: 10px; vertical-align:center;">
+    <span style="padding: 5px; vertical-align: center; height: 50px;">
+        액세스 토큰이 설정되지 않았습니다. 계정 설정을 먼저 해주세요.</span>
+    <div style="padding: 5px; margin-top: 5px;">
+        <input type="button" value="액세스 토큰 갱신" id="refresh_access_code" class="button" />
+    </div>
+</div>
 
+<?php
+} else {
+?>
 <div id="tw_metabox">
     <style>
         .cell-content {
@@ -40,12 +45,11 @@ else {
         }
     </style>
 	<div id="tw-table">
-
 		<div class="tw-row">
 			<div class="tw-cell tw-entryname">
 				<span class="cell-content" style="margin-left: 3px;">연동 계정</span></div>
 			<div class="tw-cell">
-				<span id="span_access_code">
+				<span id="blogAccount" class="blogAccount">
 				<?php
 				if ($isAccessTokenAvailable) {
 					$account = $api_mgr->getBlogAccount();
@@ -213,7 +217,6 @@ else {
 	</div>
 
 </div>
-
 <?php
 }
 ?>
