@@ -50,6 +50,7 @@ define(__NAMESPACE__ . '\PLUGIN_MENU_SLUG', 'tistory-writer-setting');
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'def' . DIRECTORY_SEPARATOR . 'constants.php');
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'def' . DIRECTORY_SEPARATOR . 'fs_require.php');
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'def' . DIRECTORY_SEPARATOR . 'errors.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'def' . DIRECTORY_SEPARATOR . 'requests.php');
 
 add_action('admin_menu', array('tistory_writer\TistoryWriter', 'addAdminOptionMenu'));
 add_action('init', array('tistory_writer\TistoryWriter', 'registerSession'));
@@ -62,6 +63,7 @@ add_action('plugins_loaded', array('tistory_writer\TistoryWriter', 'init'));
 add_action('admin_enqueue_scripts', array('tistory_writer\TistoryWriter', 'initStyle') );
 
 add_action( 'wp_ajax_saveSettings', array('tistory_writer\TistoryWriter', 'saveSettings') );
+//add_action( 'wp_ajax_saveSettings', array('tistory_writer\TistoryWriter', 'handleRequest') );
 add_action( 'wp_ajax_requestAccessCode', array('tistory_writer\TistoryWriter', 'requestAccessCode') );
 add_action( 'wp_ajax_requestAccessCodeWithAuth', array('tistory_writer\TistoryWriter', 'requestAccessCodeWithAuth') );
 add_action( 'wp_ajax_changeSelectedBlog', array('tistory_writer\TistoryWriter', 'changeSelectedBlog') );

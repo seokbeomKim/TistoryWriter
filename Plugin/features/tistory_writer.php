@@ -2,6 +2,7 @@
 
 namespace tistory_writer;
 
+use const tistory_writer\FEATURE_KEY\HANDLER;
 use const tistory_writer\FEATURE_KEY\OPTION;
 use const tistory_writer\FEATURE_KEY\TISTORY_API;
 use const tistory_writer\OPTION_KEY\ACCESS_TOKEN;
@@ -58,6 +59,11 @@ class TistoryWriter
 		$this->script_mgr = $this->class_mgr->getManager(FEATURE_KEY\SCRIPT);
 		$this->option_mgr = $this->class_mgr->getManager(FEATURE_KEY\OPTION);
 		$this->metabox = new TistoryMetabox();
+	}
+
+	public static function handleRequest() {
+		$handlerMgr = self::getManager(HANDLER);
+		$handlerMgr->handleRequest($_POST['action']);
 	}
 
 	public static function checkAuthCode($code)

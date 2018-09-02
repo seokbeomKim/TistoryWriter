@@ -1,5 +1,4 @@
 jQuery(document).ready(function($) {
-
     document.getElementById('footer-thankyou').style.display = 'none';
     document.getElementById('footer-upgrade').style.display = 'none';
 
@@ -81,10 +80,6 @@ jQuery(document).ready(function($) {
 });
 
 jQuery(document).ready(function($) {
-
-    /*
-     * 설정 저장 이벤트 처리
-     */
     $(".tw-save-setting").click(function () {             //event
 
         $(".dim-overlay").show();
