@@ -355,9 +355,11 @@ class TistoryWriter
 		$apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
 		$flag   = isset($_POST['turnIntegratationOff']);
 
-		if (!$flag && isset($_POST['postId'])) {
+		$post_info = $apiMgr->getPostInfoWithTitle($post->post_title);
+
+		if (!$flag) {
 			if (strpos($post->name, 'autosave') != true) {
-				$ti = (int)wp_kses_post($_POST['postId']);
+				$ti = (int)wp_kses_post($post_info['id']);
 				if ($ti <= 0) {
 					self::postUpdate();
 				} else {

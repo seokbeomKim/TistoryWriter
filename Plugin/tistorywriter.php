@@ -6,7 +6,7 @@
  * Author: 김석범 (Sukbeom Kim)
  * Author URI: https://chaoxifer.tistory.com
  * Contributors:None
- * Version: 1.0.4
+ * Version: 1.0.5
  * Text Domain: TistoryWriter
 
  * The MIT License
