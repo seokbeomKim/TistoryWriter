@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIncludeInspection */
+
 /**
  * PHP version 5
  *
@@ -12,28 +13,9 @@
 
 namespace tistory_writer;
 
-/**
- * 각 기능별 클래스 구현 위한 Abstract Class
- * @category Wordpress_Plugin
- * @package  Tistory_Writer
- * @author   Sukbeom Kim <sukbeom.kim@gmail.com>
- * @license  GPL v2
- * @version  Release: 0.1
- * @link     https://github.com/seokbeomKim/TistoryWriter
- */
-
 class PageManager
 {
-	public static $PAGE_SETTING = 'SETTING';
-	public static $PAGE_METABOX = 'METABOX';
-
     public $setting_page;
-    /**
-    * 클래스 생성자
-    */
-    public function __construct()
-    {
-    }
 
     /**
     * 옵션 페이지 내 플러그인 메뉴 추가
@@ -44,8 +26,6 @@ class PageManager
             add_options_page('Tistory Writer',
 	            'Tistory Writer', 'manage_options', 'tistory_writer',
 	            array($this, 'getAdminSettingPage'));
-        } else {
-            // Doing user
         }
     }
 
@@ -61,7 +41,7 @@ class PageManager
         require_once($pagePath);
     }
 
-    public function getMetaboxPage()
+    public function getMetaBoxPage()
     {
         $pagePath = PAGE_DIR . DIRECTORY_SEPARATOR . 'metabox_tw_widget.php';
         require_once($pagePath);

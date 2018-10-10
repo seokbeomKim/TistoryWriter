@@ -1,44 +1,47 @@
 <?php
-
 namespace tistory_writer;
 
-use const tistory_writer\FEATURE_KEY\HANDLER;
+//region A list of constants
 use const tistory_writer\FEATURE_KEY\OPTION;
+use const tistory_writer\FEATURE_KEY\PAGE_LOADER;
+use const tistory_writer\FEATURE_KEY\SCRIPT;
 use const tistory_writer\FEATURE_KEY\TISTORY_API;
 use const tistory_writer\OPTION_KEY\ACCESS_TOKEN;
 use const tistory_writer\OPTION_KEY\BLOG_NAME;
 use const tistory_writer\OPTION_KEY\CLIENT_ID;
+use const tistory_writer\OPTION_KEY\EXPIRE_TIMESTAMP;
 use const tistory_writer\OPTION_KEY\REDIRECT_URI;
 use const tistory_writer\OPTION_KEY\SECRET_KEY;
 use const tistory_writer\OPTION_KEY\SELECTED_BLOG;
+use const tistory_writer\PAGE_TYPE\PAGE_META_BOX;
+use const tistory_writer\PAGE_TYPE\PAGE_SETTING;
+use const tistory_writer\STRINGS\TITLE_META_BOX;
+
+//endregion
 
 /**
- * 플러그인 메인 클래스
+ * Plugin main class
  *
  * @category Wordpress_Plugin
  * @package  Tistory_Writer
  * @author   Sukbeom Kim <sukbeom.kim@gmail.com>
- * @license  GPL v2
- * @version  Release: 1.0.5
+ * @license  MIT License
+ * @version  Release: 1.0.6
  * @link     https://github.com/seokbeomKim/TistoryWriter
  */
 class TistoryWriter
 {
-
 	private static $instance;
 
 	private $class_mgr;
-	private $page_mgr;
-	private $script_mgr;
-	private $option_mgr;
-	private $metabox;
+	private $metaBox;
 
-	public static $count = 0;
+	public function __construct()
+	{
+		$this->class_mgr = new ClassManager();
+		$this->metaBox = new TistoryMetaBox();
+	}
 
-	/**
-	 * 싱글톤 객체 리턴 함수
-	 * @return 싱글톤 객체
-	 */
 	public static function init()
 	{
 		if (!self::$instance) {
@@ -47,31 +50,7 @@ class TistoryWriter
 		return self::$instance;
 	}
 
-	/**
-	 * 클래스 생성자
-	 *
-	 * @return 객체 반환
-	 */
-	public function __construct()
-	{
-		$this->class_mgr = new ClassManager();
-		$this->page_mgr = $this->class_mgr->getManager(FEATURE_KEY\PAGE_LOADER);
-		$this->script_mgr = $this->class_mgr->getManager(FEATURE_KEY\SCRIPT);
-		$this->option_mgr = $this->class_mgr->getManager(FEATURE_KEY\OPTION);
-		$this->metabox = new TistoryMetabox();
-	}
-
-	public static function handleRequest() {
-		$handlerMgr = self::getManager(HANDLER);
-		$handlerMgr->handleRequest($_POST['action']);
-	}
-
-	public static function checkAuthCode($code)
-	{
-		self::$instance->option_mgr->setOption(OPTION_KEY\AUTH_KEY, $code);
-		wp_safe_redirect(get_admin_url() . "/options-general.php?page=tistory_writer");
-	}
-
+	//region action:activate / deactivate handler
 	/**
 	 * 플러그인 활성화 후킹 함수
 	 *
@@ -99,32 +78,38 @@ class TistoryWriter
 			Logger::log("TistoryWriter::Deactivate plugin.");
 		}
 	}
-
-	public static function registerSession()
+	//endregion
+	//region action:admin_menu handler
+	public static function addAdminOptionMenu()
 	{
-		if (!session_id()) {
+		self::$instance->class_mgr->getManager(PAGE_LOADER)->addOptionPage();
+	}
+	//endregion
+	//region action:init handler
+	public static function initSession()
+	{
+		if (!session_id())
 			session_start();
-		}
 	}
-
-	public static function initPlugin()
-	{
-		self::checkGetMethodValue();
-	}
-
+	//endregion
+	//region action: admin_enqueue_scripts handler
 	public static function initStyle($hook = null)
 	{
-
 		if ($hook == 'settings_page_tistory_writer') {
-			self::loadFiles('SETTING');
+			self::loadFiles(PAGE_SETTING);
 		}
 		else {
-			self::loadFiles('METABOX');
+			self::loadFiles(PAGE_META_BOX);
 		}
-
-		// else
-		return;
 	}
+	//endregion
+	//region action:add_meta_boxes handler
+	public static function addMetaBoxes()
+	{
+		add_meta_box('tw_meta_box', TITLE_META_BOX,
+			array(self::$instance->metaBox, 'getContent'), 'post', 'normal', "high");
+	}
+	//endregion
 
 	public static function checkSessionAndStart()
 	{
@@ -133,249 +118,102 @@ class TistoryWriter
 		}
 	}
 
-	public static function addMetaboxes()
-	{
-		add_meta_box('tw_meta_box', '티스토리 연동',
-			array(self::$instance->metabox, 'getContent'), 'post', 'normal', "high");
-	}
-
 	/**
-	 * 사용자 버튼에 의해 Get Value가 전달됐는지 확인
+	 * Return managers used in plugins
+	 *
+	 * <code>
+	 * $this->features = array (
+	 * FEATURE_KEY\OPTION => new OptionManager(),
+	 * FEATURE_KEY\PAGE_LOADER => new PageManager(),
+	 * FEATURE_KEY\SCRIPT => new ScriptManager(),
+	 * FEATURE_KEY\AUTH => new AuthManager(),
+	 * FEATURE_KEY\TISTORY_API => new ApiManager(),
+	 * FEATURE_KEY\HANDLER => new HandlerManager(),
+	 * );
+	 * </code>
+	 *
+	 * @param $managerName string
+	 *
+	 * @return ApiManager|AuthManager|ClassManager|HandlerManager|OptionManager|PageManager|ScriptManager|RequestManager
 	 */
-	public static function checkGetMethodValue()
-	{
-		self::checkSessionAndStart();
-
-		$current_url="https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-
-		if (isset($_GET['code'])) {
-			self::$instance->option_mgr->setOption($_GET['code'], \tistory_writer\OPTION_KEY\AUTH_KEY);
-
-			// ACCESS CODE 갱신
-
-		}
-	}
-
-	public static function addAdminOptionMenu()
-	{
-		self::$instance->page_mgr->addOptionPage();
-	}
-
-	public static function loadFiles($pageType)
-	{
-		self::$instance->script_mgr->loadFiles($pageType);
-	}
-
 	public static function getManager($managerName)
 	{
 		return self::$instance->class_mgr->getManager($managerName);
 	}
 
-	public static function handlerSubmit()
+	public static function loadFiles($pageType)
 	{
-		$handlerMgr = self::getManager(FEATURE_KEY\HANDLER);
-
-		// Validate in handle method
-		$redirectDef = wp_kses_post($_POST['redirect_def']);
-		$handlerMgr->handle($redirectDef);
+		self::$instance->class_mgr->getManager(SCRIPT)->loadFiles($pageType);
 	}
 
-	public static function redirectPage()
-	{
-		global $pagenow;
-		exit(wp_redirect(admin_url('options-general.php?page=tistory_writer')));
-	}
-
-	public static function getMetaboxData()
-	{
-		$apiMgr   = self::getManager(FEATURE_KEY\TISTORY_API);
-		$title = $_POST['title'];
-
-		$categories = $apiMgr->getCategoryList();
-		$postInfo = $apiMgr->getPostInfoWithTitle($title);
-
-		if (!is_null($postInfo)) {
-			$detail = $apiMgr->getDetailInfoWithPostId( $postInfo['id'] );
-
-			$rvalue = array (
-				'detail' => $detail,
-				'category' => $categories,
-			);
-		}
-		else {
-			$rvalue = array (
-				'detail' => null,
-				'category' => $categories,
-			);
-		}
-
-		wp_die(json_encode($rvalue));
-	}
-
+	//region post:insert/edit/update
 	public static function postUpdate()
 	{
-		if (isset($_POST['post_title']) && isset($_POST['content'])) {
-			$apiMgr     = self::getManager(FEATURE_KEY\TISTORY_API);
-
-			$title      = stripslashes(wp_kses_post($_POST['post_title']));
-			$content    = stripslashes(wp_kses_post($_POST['post_content']));
-			$content    = nl2br($content);
-			$tag        = wp_kses_post($_POST['input_tag']);
-
-			$category_id    = isset($_POST['select_category']) ? wp_kses_post($_POST['select_category']) : "";
-			$visibility     = isset($_POST['select_visibility']) ? wp_kses_post($_POST['select_visibility']) : "0";
-			$isAllowComment = isset($_POST['checkAllowComment']) ? wp_kses_post($_POST['checkAllowComment']) : "0";
-
-			$apiMgr->insertPost($title, $content, $visibility, $category_id, "", $isAllowComment, $tag);
-		}
+		$requestMgr = self::getManager(FEATURE_KEY\REQUEST);
+		$requestMgr->postUpdate();
 	}
 
 	public static function editPost()
 	{
-		if (isset($_POST['post_title']) && isset($_POST['content'])) {
-			$apiMgr     = self::getManager(FEATURE_KEY\TISTORY_API);
-
-			$title      = stripslashes(wp_kses_post($_POST['post_title']));
-			$content    = stripslashes(wp_kses_post($_POST['post_content']));
-			$content    = nl2br($content);
-			$tag        = wp_kses_post($_POST['input_tag']);
-
-			$category_id    = isset($_POST['select_category']) ? wp_kses_post($_POST['select_category']) : "";
-			$visibility     = isset($_POST['checkMakePublic']) ? wp_kses_post($_POST['checkMakePublic']) : "0";
-			$isAllowComment = isset($_POST['checkAllowComment']) ? wp_kses_post($_POST['checkAllowComment']) : "0";
-			$postId         = wp_kses_post($_POST['postId']);
-
-			if (!wp_is_post_autosave($postId)) {
-				$apiMgr->updatePost($title, $content, $visibility, $category_id, "", $isAllowComment, $tag, $postId);
-			}
-		}
+		$requestMgr = self::getManager(FEATURE_KEY\REQUEST);
+		$requestMgr->editPost();
 	}
 
-	public static function decodeCharacters($data)
+	public static function insertPost($post_id, $post, $update)
 	{
-		return mb_convert_encoding($data, 'UTF-8', 'HTML-ENTITIES');
+		$requestMgr = self::getManager(FEATURE_KEY\REQUEST);
+		$requestMgr->insertPost($post_id, $post, $update);
+	}
+	//endregion
+
+	//region GET/POST request handlers
+	public static function getMetaBoxData()
+	{
+		check_ajax_referer( 'tistory_writer' );
+		$requestMgr = self::getManager(FEATURE_KEY\REQUEST);
+		wp_die($requestMgr->getMetaBoxData());
+	}
+
+	public static function getUrlForAccessToken()
+	{
+		check_ajax_referer( 'tistory_writer' );
+		$requestMgr = self::getManager(FEATURE_KEY\REQUEST);
+		wp_die($requestMgr->getUrlForAccessToken());
 	}
 
 	public static function saveSettings()
 	{
 		check_ajax_referer( 'tistory_writer' );
-
-		$optionMgr = self::getManager(FEATURE_KEY\OPTION);
-
-		$optionMgr->setOption(CLIENT_ID, $_POST['client_id']);
-		$optionMgr->setOption(SECRET_KEY, $_POST['secret_key']);
-		$optionMgr->setOption(BLOG_NAME, $_POST['blog_name']);
-
-		$apiMgr = self::getManager(TISTORY_API);
-		$blogInfo = $apiMgr->getBlogInformation();
-
-		wp_die(json_encode($blogInfo));
+		$requestMgr = self::getManager(FEATURE_KEY\REQUEST);
+		wp_die($requestMgr->saveSettings());
 	}
 
 	public static function changeSelectedBlog()
 	{
 		check_ajax_referer( 'tistory_writer' );
-
-		$optionMgr = self::getManager(OPTION);
-		$optionMgr->setOption(SELECTED_BLOG, $_POST['selected_blog']);
-
-		wp_die("VALUE");
+		$requestMgr = self::getManager(FEATURE_KEY\REQUEST);
+		wp_die($requestMgr->changeSelectedBlog());
 	}
 
 	public static function requestAccessCode()
 	{
 		check_ajax_referer( 'tistory_writer' );
-
-		$optionMgr = self::getManager(FEATURE_KEY\OPTION);
-		$optionMgr->setOption(ACCESS_TOKEN, $_POST['access_code']);
-
-		$blogInfo = null;
-
-		// Access code 갱신 요청 시, 클라이언트 페이지에 블로그 정보로 갱신할 블로그 주소를 송신한다.
-		$apiMgr = self::getManager(TISTORY_API);
-		$blogInfo = $apiMgr->getBlogInformation();
-
-		wp_die(json_encode($blogInfo));
-	}
-
-	public static function getUrlForAccessToken()
-	{
-		$optionMgr = self::getManager(FEATURE_KEY\OPTION);
-
-		$rvalue = "https://www.tistory.com/oauth/authorize?client_id=" . $optionMgr->getOption(CLIENT_ID) .
-		"&redirect_uri=" . $optionMgr->getOption(REDIRECT_URI) . "&response_type=token";
-
-		wp_die($rvalue);
+		$requestMgr = self::getManager(FEATURE_KEY\REQUEST);
+		wp_die($requestMgr->requestAccessCode());
 	}
 
 	public static function requestAccessCodeWithAuth()
 	{
 		check_ajax_referer( 'tistory_writer' );
-
-		$optionMgr = self::getManager(FEATURE_KEY\OPTION);
-		$authorization_code = $_POST['auth_code'];
-
-		$client_id = $optionMgr->getOption(CLIENT_ID);
-		$client_secret = $optionMgr->getOption(SECRET_KEY);
-		$redirect_uri = $optionMgr->getOption(REDIRECT_URI);
-		$grant_type = 'authorization_code';
-
-		$url = 'https://www.tistory.com/oauth/access_token/?code=' . $authorization_code .
-		       '&client_id=' . $client_id . '&client_secret=' . $client_secret .
-		       '&redirect_uri=' . urlencode($redirect_uri) . '&grant_type=' . $grant_type;
-
-		$access_token = ($url);
-
-		$rvalue = str_replace('access_token=', '', $access_token);
-		$optionMgr->setOption(ACCESS_TOKEN, $rvalue);
-
-		wp_die($rvalue);
+		$requestMgr = self::getManager(FEATURE_KEY\REQUEST);
+		wp_die($requestMgr->requestAccessCodeWithAuth());
 	}
 
 	public static function requestBlogUrl()
 	{
 		check_ajax_referer( 'tistory_writer' );
-
-		$apiMgr = self::getManager(TISTORY_API);
-		$blogInfo = $apiMgr->getBlogInformation();
-
-		if (is_null($blogInfo)) {
-			wp_die("FAIL");
-		}
-
-		foreach ($blogInfo as $blog) {
-			if ($blog->name == $_POST['blog_name']) {
-				$rvalue = array($blog->title, $blog->url);
-				wp_die(json_encode($rvalue));
-				break;
-			}
-		}
-		wp_die("FAIL");
+		$requestMgr = self::getManager(FEATURE_KEY\REQUEST);
+		wp_die($requestMgr->requestBlogUrl());
 	}
-
-	/**
-	 * 사용자가 포스팅한 글을 티스토리에 업데이트한다.
-	 */
-	public static function insertPost($post_id, $post, $update)
-	{
-		$apiMgr = self::getManager(FEATURE_KEY\TISTORY_API);
-		$flag   = isset($_POST['turnIntegratationOff']);
-
-		$post_info = $apiMgr->getPostInfoWithTitle($post->post_title);
-
-		if (!$flag) {
-			if (strpos($post->name, 'autosave') != true) {
-				$ti = (int)wp_kses_post($post_info['id']);
-				if ($ti <= 0) {
-					self::postUpdate();
-				} else {
-					self::editPost();
-				}
-			}
-		} else {
-			if (method_exists('\\tistory_writer\\Logger', 'log')) {
-				Logger::log("insertPost, 연동기능 임시 해제");
-			}
-		}
-	}
+	//endregion
 }

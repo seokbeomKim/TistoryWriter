@@ -33,7 +33,7 @@ $(document).ready(function() {
     });
 
     $('#select_blogname').change(function() {
-        $("#loading_post").innerText = "불러오는중...";
+        $("#loading_post").innerText = "불러오는 중...";
         $("#loading_post").css('visibility', 'visible');
 
         var id = $(this).find(':selected')[0].value;
@@ -43,7 +43,7 @@ $(document).ready(function() {
             action: "changeSelectedBlog",
             'selected_blog': id,
         }, function(data) {
-            GetMetaboxData();
+            GetMetaBoxData();
         });
     });
 });
@@ -55,11 +55,12 @@ function checkChild() {
     }
 }
 
-function GetMetaboxData() {
+function GetMetaBoxData() {
     $.post(tw_ajax.ajax_url, {
         _ajax_nonce: tw_ajax.nonce,
-        action: "getMetaboxData",
+        action: "getMetaBoxData",
         'title': $('#title').attr('value'),
+        'wp_postId': new URL(window.location).searchParams.get("post"),
     }, function(data) {
         if (data != null) {
             ReflectMetadata(data);
@@ -78,6 +79,7 @@ function ReflectMetadata(data) {
 
     var postvalue = metadata['detail'];
     var categories = metadata['category'];
+    var linkFlag = metadata['linkFlag'];
 
     // 초기화
     $("#select_category").empty();
@@ -133,4 +135,6 @@ function ReflectMetadata(data) {
         $("#input_tag").attr('value', postvalue['tags']['tag'].toString());
     }
 
+    // 저장된 연동 여부 체크박스 불러옴
+    $("#turnIntegratationOff").prop('checked', linkFlag);
 }

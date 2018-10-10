@@ -1,6 +1,8 @@
 <?php
 namespace tistory_writer;
 
+use const tistory_writer\PAGE_TYPE\PAGE_META_BOX;
+use const tistory_writer\PAGE_TYPE\PAGE_SETTING;
 /**
  * 플러그인에서 사용할 스크립트 파일들을 관리한다.
  */
@@ -15,27 +17,54 @@ class ScriptManager
         "metabox" => "css\metabox.css",
     );
 
-    public $files_javascript = array (
-
-    );
-
-    /* Constructor */
-    public function __construct()
+    private function registerFiles()
     {
+	    $this->registerStyleFiles();
+	    $this->registerScriptFiles();
     }
 
-    /**
-     * 플러그인에서 사용하는 모든 스크립트 파일을 로드한다.
-     */
+	public function registerScriptFiles()
+	{
+		$path = join('/', array(PLUGIN_URL, 'assets', 'scripts', 'set_config.js'));
+		wp_register_script('tistory-writer-set_config', $path);
+
+		$path = join('/', array(PLUGIN_URL, 'assets', 'scripts', 'material.min.js'));
+		wp_register_script('tistory-writer-mdl-js', $path);
+	}
+
+	public function registerStyleFiles()
+	{
+		$path = join('/', array(PLUGIN_URL,'assets', 'css','setting.css'));
+		wp_register_style('tistory-writer-main', $path);
+
+		$path = join('/', array(PLUGIN_URL,'assets', 'css','metabox.css'));
+		wp_register_style('tistory-writer-metabox', $path);
+
+		$path = join('/', array(PLUGIN_URL,'assets', 'css','material.css'));
+		wp_register_style('tistory-writer-mdl', $path);
+	}
+
+	public function enqueueScriptFiles()
+	{
+		wp_enqueue_script('tistory-writer-set_config');
+		wp_enqueue_script('tistory-writer-mdl-js');
+	}
+
+	public function enqueueStyleFiles($disable_mdl = false)
+	{
+		if ($disable_mdl == false) {
+			wp_enqueue_style('tistory-writer-mdl');
+		}
+		wp_enqueue_style('tistory-writer-main');
+		wp_enqueue_style('tistory-writer-metabox');
+	}
+
     public function loadFiles($pageType)
     {
-    	if ($pageType == 'SETTING') {
-		    $this->registerStyleFiles();
-		    $this->registerScriptFiles();
-
+    	$this->registerFiles();
+    	$this->enqueueScriptFiles();
+    	if ($pageType == PAGE_SETTING) {
 		    $this->enqueueStyleFiles();
-		    $this->enqueueScriptFiles();
-
 		    wp_enqueue_script( 'ajax-script',
 			    plugins_url( '../assets/scripts//tw_jquery.js', __FILE__ ),
 			    array('jquery')
@@ -47,14 +76,8 @@ class ScriptManager
 			    'nonce'    => $title_nonce, // It is common practice to comma after
 		    ));
 	    }
-	    else if ($pageType == 'METABOX')
-	    {
-		    $this->registerStyleFiles();
-		    $this->registerScriptFiles();
-
+	    else if ($pageType == PAGE_META_BOX) {
 		    $this->enqueueStyleFiles(true);
-		    $this->enqueueScriptFiles();
-
 		    wp_enqueue_script( 'ajax-script',
 			    plugins_url( '../assets/scripts//tw_metabox_jquery.js', __FILE__ ),
 			    array('jquery')
@@ -66,46 +89,5 @@ class ScriptManager
 			    'nonce'    => $title_nonce, // It is common practice to comma after
 		    ));
 	    }
-
-    }
-
-    public function registerScriptFiles()
-    {
-        $path = join('/', array(PLUGIN_URL, 'assets', 'scripts', 'set_config.js'));
-        wp_register_script('tistory-writer-set_config', $path);
-
-	    $path = join('/', array(PLUGIN_URL, 'assets', 'scripts', 'material.min.js'));
-	    wp_register_script('tistory-writer-mdl-js', $path);
-
-	    //$path = join('/', array(PLUGIN_URL, 'assets', 'scripts', 'tw_jquery.js'));
-	    //wp_register_script('tistory-writer-jquery', $path);
-    }
-
-    public function enqueueScriptFiles()
-    {
-	    wp_enqueue_script('tistory-writer-set_config');
-	    wp_enqueue_script('tistory-writer-mdl-js');
-	    //wp_enqueue_script('tistory-writer-jquery');
-    }
-
-    public function registerStyleFiles()
-    {
-        $path = join('/', array(PLUGIN_URL,'assets', 'css','setting.css'));
-        wp_register_style('tistory-writer-main', $path);
-
-        $path = join('/', array(PLUGIN_URL,'assets', 'css','metabox.css'));
-        wp_register_style('tistory-writer-metabox', $path);
-
-	    $path = join('/', array(PLUGIN_URL,'assets', 'css','material.css'));
-	    wp_register_style('tistory-writer-mdl', $path);
-    }
-
-    public function enqueueStyleFiles($disable_mdl = false)
-    {
-    	if ($disable_mdl == false) {
-		    wp_enqueue_style('tistory-writer-mdl');
-	    }
-	    wp_enqueue_style('tistory-writer-main');
-        wp_enqueue_style('tistory-writer-metabox');
     }
 }

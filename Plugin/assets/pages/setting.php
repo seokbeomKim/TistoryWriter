@@ -16,6 +16,7 @@ namespace tistory_writer;
         <a href="#setting_step3-panel" class="mdl-tabs__tab">3. 연동 상태</a>
         <!-- <a href="#setting_step3-panel" class="mdl-tabs__tab">글 내보내기</a> -->
         <a href="#changelog-panel" class="mdl-tabs__tab">업데이트 내역</a>
+        <a href="#license-panel" class="mdl-tabs__tab">라이센스 정보</a>
     </div>
 
 
@@ -28,6 +29,7 @@ namespace tistory_writer;
 	<?php include "panel_setting_step2.php"; ?>
 	<?php include "panel_setting_step3.php"; ?>
 	<?php include "panel_changelog.php"; ?>
+    <?php include "panel_license.php"; ?>
 
 </div>
     <div class="setting-spinner mdl-spinner mdl-js-spinner is-active" style="top: 50%; left: 50%; visibility: hidden;"></div>

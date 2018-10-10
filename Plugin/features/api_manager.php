@@ -5,7 +5,9 @@ namespace tistory_writer;
  * 티스토리 연동 시 사용하는 티스토리 API 관리 클래스
  */
 
-const TRY_NUM = 5;
+use const tistory_writer\META_KEY\INTEGRATION_CHECK;
+use const tistory_writer\OPTION_KEY\SELECTED_BLOG;
+const TRY_NUM        = 5;
 const CACHE_BLOGINFO = "CACHE_BLOGINFO";
 
 class ApiManager
@@ -100,6 +102,7 @@ class ApiManager
 	    return $result->item->blogs;
     }
 
+
     public function requestPost($url, $data)
     {
 		$data['output'] = 'json';
@@ -113,7 +116,9 @@ class ApiManager
 	    $rvalue = json_decode( $body );
 
 	    if (is_null($rvalue)) {
-            return json_decode($this->requestPostFallback($url, $data))->tistory;
+            $fallback = json_decode($this->requestPostFallback($url, $data));
+            if (!is_null($fallback)) return $fallback->tistory;
+            else return null;
 	    }
 
 
@@ -182,10 +187,11 @@ class ApiManager
 	        if ( $result != null && $result->status == 200 ) {
 		        return $result;
 	        } else {
-	        	if ($i == TRY_NUM - 1)
-		            return json_decode($this->requestGetFallback($url, $data))->tistory;
-	        	else
-	        		;   // TRY AGAIN
+	        	if ($i == TRY_NUM - 1) {
+			        $fallback = json_decode($this->requestGetFallback($url, $data));
+			        if (!is_null($fallback)) return $fallback->tistory;
+			        else return null;
+		        }
 	        }
         }
     }
@@ -293,6 +299,11 @@ class ApiManager
         } // if statement ends here
     }
 
+    public function getPostMetaKey() {
+    	// 현재 선택된 블로그명과 INTEGRATION_CHECK 이용하여 meta key 반환
+	    return INTEGRATION_CHECK . "@" . get_option(SELECTED_BLOG);
+    }
+
     public function getPostInfoWithTitle($title)
     {
     	if (is_null($title) || empty($title)) {
@@ -340,6 +351,16 @@ class ApiManager
     public function decodeCharacters($data)
     {
         return mb_convert_encoding($data, 'UTF-8', 'HTML-ENTITIES');
+    }
+
+    public function getLinkFlagWithPostId($post_id)
+    {
+    	$rvalue = get_post_meta($post_id, $this->getPostMetaKey());
+    	if (is_null($rvalue)) {
+		    return false;
+	    } else {
+    		return $rvalue[0] == 1 ? True : False;
+	    }
     }
 
 	public function getDetailInfoWithPostId($post_id)
@@ -452,4 +473,6 @@ class ApiManager
             return false;
         }
     }
+
+
 }

@@ -49,6 +49,7 @@ class OptionManager
     public function getOption($name)
     {
         TistoryWriter::checkSessionAndStart();
+
         $var = get_option($name);
         return $var;
     }

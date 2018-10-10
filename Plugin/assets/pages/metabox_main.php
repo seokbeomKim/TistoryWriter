@@ -6,9 +6,7 @@ global $post;
 use const tistory_writer\ERRORS\ACCESS_TOKEN_EXPIRED;
 use const tistory_writer\FEATURE_KEY\OPTION;
 use const tistory_writer\FEATURE_KEY\TISTORY_API;
-use const tistory_writer\OPTION_KEY\ACCESS_TOKEN;
-use const tistory_writer\OPTION_KEY\CLIENT_ID;
-use const tistory_writer\OPTION_KEY\REDIRECT_URI;
+use const tistory_writer\META_KEY\INTEGRATION_CHECK;
 use const tistory_writer\OPTION_KEY\SELECTED_BLOG;
 
 $isAccessTokenAvailable = false;
@@ -211,7 +209,11 @@ if (!$isAccessTokenAvailable) {
         <div class="tw-row">
             <div class="tw-cell tw-entryname">연동 임시해제</div>
             <div class="tw-cell">
-			<input type="checkbox" name="turnIntegratationOff" value="off" id="turnIntegratationOff" />
+    			<input type="checkbox" name="turnIntegratationOff" value="off" id="turnIntegratationOff"
+                       title="연동 해제" <?php if ($api_mgr->getLinkFlagWithPostId($post->ID)) {
+                           echo 'checked';
+                }?>
+                <label name="lbl_integration_check"></label>
             </div>
 		</div>
 	</div>

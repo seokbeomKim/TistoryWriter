@@ -18,6 +18,7 @@ class ClassManager
             FEATURE_KEY\AUTH => new AuthManager(),
             FEATURE_KEY\TISTORY_API => new ApiManager(),
             FEATURE_KEY\HANDLER => new HandlerManager(),
+	        FEATURE_KEY\REQUEST => new RequestManager(),
         );
     }
 

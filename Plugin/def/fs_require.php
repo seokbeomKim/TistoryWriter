@@ -40,7 +40,11 @@ if (!class_exists('\\tistory_writer\\HandlerManager')) {
     require_once(PLUGIN_DIR . 'features' . DIRECTORY_SEPARATOR . 'handler_manager.php');
 }
 
-if (!class_exists('\\tistory_writer\\TistoryMetabox')) {
+if (!class_exists('\\tistory_writer\\RequestManager')) {
+	require_once(PLUGIN_DIR . 'features' . DIRECTORY_SEPARATOR . 'request_manager.php');
+}
+
+if (!class_exists( '\\tistory_writer\\TistoryMetaBox' )) {
     require_once(PLUGIN_DIR . 'widgets' . DIRECTORY_SEPARATOR . 'TistoryMetabox.php');
 }
 
