@@ -2,14 +2,10 @@
 	<div class="intro_div">
 		<main class="mdl-layout__content" style="width:100%;">
 			<div class="page-content">
-				<h4>OAUTH 인증 클라이언트 등록</h4>
-
-                <div class="mdl-cell mdl-cell--8-col mdl-card__supporting-text no-padding">
-                    <p>
-                        <a href="http://www.tistory.com/guide/api/manage/register" target="_blank">
-                            OAUTH 인증 등록페이지</a>로 접속한 뒤 아래의 정보들을 입력합니다.</p>
-
-
+                <div class="mdl-card__supporting-text">
+                <h4>인증 준비</h4>
+                <p style="margin-left: 5px">티스토리의 <a href="http://www.tistory.com/guide/api/manage/register" target="_blank">
+                        OAUTH 인증 관리페이지</a>로 접속한 뒤 아래의 정보들을 입력합니다.</p>
                     <ul class='mdl-list'>
                         <li class="mdl-list__item mdl-list__item--two-line">
                                 <span class="mdl-list__item-primary-content">
@@ -59,8 +55,6 @@
                                 </span>
                         </li>
                     </ul>
-                </div>
-
             </div>
 		</main>
 	</div>

@@ -6,7 +6,6 @@ global $post;
 use const tistory_writer\ERRORS\ACCESS_TOKEN_EXPIRED;
 use const tistory_writer\FEATURE_KEY\OPTION;
 use const tistory_writer\FEATURE_KEY\TISTORY_API;
-use const tistory_writer\META_KEY\INTEGRATION_CHECK;
 use const tistory_writer\OPTION_KEY\SELECTED_BLOG;
 
 $isAccessTokenAvailable = false;

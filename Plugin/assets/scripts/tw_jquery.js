@@ -174,3 +174,19 @@ jQuery(document).ready(function($) {
             "&redirect_uri=" + callback_url + "&response_type=token");
     });
 });
+
+// backup & restore 페이지에서 사용되는 js
+jQuery(document).ready(function($) {
+    $(".header_backup_panel").click(function () {
+
+        var tpanel = $(".tw_backup-accordion_panel");
+        if (x.className.indexOf("w3-show") == -1) {
+            x.className += " w3-show";
+        } else {
+            x.className = x.className.replace(" w3-show", "");
+        }
+    });
+    $(".header_restore_panel").click(function() {
+        alert('restore');
+    });
+});

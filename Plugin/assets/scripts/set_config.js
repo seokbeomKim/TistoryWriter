@@ -104,4 +104,3 @@ function adjustBlogUrlList(blogList, blogInformation) {
     }
     componentHandler.upgradeDom();
 }
-

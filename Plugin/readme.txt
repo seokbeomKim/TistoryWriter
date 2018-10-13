@@ -5,7 +5,7 @@ Tags: content, tistory, development, integration
 Requires at least: 4.6
 Tested up to: 4.9.8
 Required PHP: 5.6
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: MIT License
 License URI: https://mit-license.org/
 
@@ -42,6 +42,9 @@ License URI: https://mit-license.org/
 6. 블로그에 글이 자동으로 업로드 된 것을 확인할 수 있습니다.
 
 == Changelog ==
+= 1.0.7 =
+* UI 수정
+
 = 1.0.6 =
 * 라이센스 추가
 * PHP 관련 최소 사양 정보 추가

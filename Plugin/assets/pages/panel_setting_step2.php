@@ -10,11 +10,11 @@ namespace tistory_writer;
     </style>
     <main class="mdl-layout__content" style="width:100%;">
         <div class="page-content">
-            <h4 id="step2">인증 정보 설정</h4>
-            <div class="mdl-cell mdl-cell--8-col mdl-card__supporting-text no-padding" id="tistory_writer">
-                <p>위 단계에서 등록한 클라이언트 정보를 아래에 입력한 후 저장 버튼을 클릭하여 인증 정보를 저장합니다.<br/>
+            <div class="mdl-card__supporting-text" id="tistory_writer">
+                <h4 id="step2">블로그 설정</h4>
+                <p style="margin-left: 5px">위 단계에서 등록한 클라이언트 정보를 아래에 입력한 후 저장 버튼을 클릭하여 인증 정보를 저장합니다.<br/>
                     티스토리 내 인증 관리페이지에 접속하기 위해서는 <a href="https://www.tistory.com/guide/api/manage/list">여기</a>를 클릭하세요.</p>
-                    <form action="#" style="margin-left: 30px;">
+                    <form action="#" style="margin-top: 30px; margin-left: 7px;">
                         <ul class="listitem mdl-list" id="setup-list">
                             <li class="listitem mdl-list__item">
                                 <span class="mdl-list__item-primary-content">

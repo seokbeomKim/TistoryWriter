@@ -26,7 +26,7 @@ use const tistory_writer\STRINGS\TITLE_META_BOX;
  * @package  Tistory_Writer
  * @author   Sukbeom Kim <sukbeom.kim@gmail.com>
  * @license  MIT License
- * @version  Release: 1.0.6
+ * @version  Release: 1.0.7
  * @link     https://github.com/seokbeomKim/TistoryWriter
  */
 class TistoryWriter

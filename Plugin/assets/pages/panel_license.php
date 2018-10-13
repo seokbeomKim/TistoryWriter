@@ -2,9 +2,8 @@
 	<div class="intro_div">
 		<main class="mdl-layout__content" style="width:100%;">
 			<div class="page-content">
-				<h4>라이센스 정보</h4>
 				<div class="mdl-cell mdl-cell--8-col mdl-card__supporting-text no-padding">
-					<pre>
+                    <pre>
 The MIT License
 Copyright (c) 2018 Sukbeom Kim
 

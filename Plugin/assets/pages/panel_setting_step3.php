@@ -6,10 +6,8 @@ namespace tistory_writer;
     <div class="intro_div">
         <main class="mdl-layout__content" style="width:100%;">
             <div class="page-content">
-                <h4>연동상태 확인</h4>
-
-                <div class="mdl-cell mdl-cell--8-col mdl-card__supporting-text no-padding">
-
+                <div class="mdl-card__supporting-text">
+                    <h4>연동상태 확인</h4>
                     <ul id="status-list" class='mdl-list' style="width:700px;">
                         <li class="mdl-list__item mdl-list__item--two-line">
                             <span class="mdl-list__item-primary-content">

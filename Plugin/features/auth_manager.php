@@ -8,21 +8,6 @@ class AuthManager
 {
     public $access_token;
 
-    public function __construct()
-    {
-    }
-
-    /**
-    * 현재 갖고 있는 Access 토큰 정보가 유효한지 확인한다.
-    */
-    public function checkAuthorizationAvailable()
-    {
-    }
-
-    public function getAccessCode()
-    {}
-
-
     public function getAccessToken($return_url = null)
     {
         if (method_exists('\\tistory_writer\\Logger', 'log')) {
@@ -47,9 +32,6 @@ class AuthManager
         $optionMgr->setOption(OPTION_KEY\ACCESS_TOKEN, $final_token);
     }
 
-    /**
-     * Deprecated
-     */
     public function getAuthToken()
     {
         $optionMgr = TistoryWriter::getManager(FEATURE_KEY\OPTION);
