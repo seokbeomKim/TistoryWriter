@@ -1,7 +1,8 @@
 <link href="markdown.css" rel="stylesheet"></link>
 
 # Tistory Writer (Deprecated)
-* 현재는 지원하지 않습니다. *
+**현재 지원하지 않습니다**
+
 워드프레스용 티스토리 연동 플러그인 입니다.
 사용 중 발견되는 버그는 <sukbeom.kim@gmail.com>으로 메일 주시기 바랍니다.
 
